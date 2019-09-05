@@ -1,6 +1,6 @@
 # Projects
 
-Projects is a plugin for ...
+Projects is a plugin to manage (project-)task dependencies with discourse. 
 
 ## Installation
 
