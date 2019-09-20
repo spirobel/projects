@@ -4,6 +4,7 @@ class CreateProjectsTasks < ActiveRecord::Migration[5.2]
       t.datetime :begin
       t.datetime :end
       t.integer  :duration
+      t.integer  :locked, default: 0
 
       t.timestamps
     end
