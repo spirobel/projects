@@ -1,3 +1,6 @@
 en:
   js:
     projects:
+    category:
+      projects_setting_heading: "Projects"
+      enable_projects: "Allow tasks to be added to topics in this category.This makes this category a project."
