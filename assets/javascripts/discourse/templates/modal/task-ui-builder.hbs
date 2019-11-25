@@ -1,0 +1,22 @@
+{{#d-modal-body title="bla" class="poll-ui-builder"}}
+  <form class="poll-ui-builder-form form-horizontal">
+    <div class="options">
+
+
+
+
+
+
+        <div class="input-group poll-date">
+          {{date-picker-future value=date containerId="date-container"}}
+          {{input type="time" value=time}}
+          <div id="date-container"></div>
+        </div>
+    </div>
+
+  </form>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button action=(action "insertPoll") icon="chart-bar" class='btn-primary' label='poll.ui_builder.insert' disabled=disableInsert}}
+</div>
