@@ -32,4 +32,13 @@ after_initialize do
       end
     end
   end
+
+
+  Post.class_eval do
+    has_one :projects_task, dependent: :destroy
+    after_save do
+      puts "test"
+      #byebug
+    end
+  end
 end
