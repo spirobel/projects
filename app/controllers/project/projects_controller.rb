@@ -1,5 +1,5 @@
 module Project
-  class ProjectController < ::ApplicationController
+  class ProjectsController < ::ApplicationController
     requires_plugin Project
 
     before_action :ensure_logged_in
