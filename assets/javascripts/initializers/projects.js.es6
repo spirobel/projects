@@ -10,15 +10,29 @@ function initializeComposer(api) {
   Composer.serializeOnCreate('time');
   Composer.serializeToTopic('date');
   Composer.serializeToTopic('time');
+  //UPDATE do we really need this?
   Composer.serializeToTopic('projects_task_attributes')
+  //CREATE do we really need this? maybe enough to .set on composer 
   Composer.serializeOnCreate('projects_task_attributes')
+  //DRAFT
   Composer.serializeToDraft('projects_task_attributes')
-
+  //CREATE
+//we can work with this: second arg gives us date,time pr_t_att etc
+  api.onAppEvent('topic:created', () => {
+       console.log('a topic was created');
+     });
+//UPDATE
+//this.date time pr_t_att etc is all there
+//also: ​this.action: "edit" and this.topic.id
+//topic.currentPost: 1
+ api.composerBeforeSave(() => {
+   console.log("Before saving, do something!");
+ })
 
 
   //imitating poll plugin https://github.com/discourse/discourse/blob/master/plugins/poll/assets/javascripts/initializers/add-poll-ui-builder.js.es6
   api.modifyClass("controller:composer", {
-
+//DRAFT observe fields that should be saved periodically to draft
   @observes("model.date", "model.time")
   __shouldSaveDraft() {
   this.get('model').dataChanged();
