@@ -6,6 +6,16 @@ import { debounce } from "@ember/runloop";
 function initializeComposer(api) {
   Composer.serializeToDraft('date');
   Composer.serializeToDraft('time');
+  Composer.serializeOnCreate('date');
+  Composer.serializeOnCreate('time');
+  Composer.serializeToTopic('date');
+  Composer.serializeToTopic('time');
+  Composer.serializeToTopic('projects_task_attributes')
+  Composer.serializeOnCreate('projects_task_attributes')
+  Composer.serializeToDraft('projects_task_attributes')
+
+
+
   //imitating poll plugin https://github.com/discourse/discourse/blob/master/plugins/poll/assets/javascripts/initializers/add-poll-ui-builder.js.es6
   api.modifyClass("controller:composer", {
 
@@ -23,7 +33,7 @@ function initializeComposer(api) {
         }).set("toolbarEvent", this.toolbarEvent);
       this.set("model.date", "test");
       this.set("model.time", "test");
-
+      this.set("model.projects_task_attributes",{duration:1})
       composermodel.setProperties({
         date: moment()
           .add(1, "day")

@@ -15,6 +15,8 @@ PLUGIN_NAME ||= "Project".freeze
 load File.expand_path('../lib/projects/engine.rb', __FILE__)
 
 after_initialize do
+  PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
+  add_permitted_post_create_param({:projects_task_attributes => [:duration]},:hash)
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
   Category.register_custom_field_type('projects_enabled', :boolean)
   [
@@ -32,12 +34,13 @@ after_initialize do
       end
     end
   end
+Rails.logger.level = 0
+  Topic.class_eval do
+    has_one :projects_task, dependent: :destroy, :inverse_of => :topic
+    accepts_nested_attributes_for :projects_task
 
-
-  Post.class_eval do
-    has_one :projects_task, dependent: :destroy
     after_save do
-      puts "test"
+      puts 'huhu'
       #byebug
     end
   end
