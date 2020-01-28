@@ -6,14 +6,7 @@ import { debounce } from "@ember/runloop";
 function initializeComposer(api) {
   Composer.serializeToDraft('date');
   Composer.serializeToDraft('time');
-  Composer.serializeOnCreate('date');
-  Composer.serializeOnCreate('time');
-  Composer.serializeToTopic('date');
-  Composer.serializeToTopic('time');
-  //UPDATE do we really need this?
-  Composer.serializeToTopic('projects_task_attributes')
-  //CREATE do we really need this? maybe enough to .set on composer 
-  Composer.serializeOnCreate('projects_task_attributes')
+
   //DRAFT
   Composer.serializeToDraft('projects_task_attributes')
   //CREATE
