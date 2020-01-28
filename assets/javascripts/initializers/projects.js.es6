@@ -20,6 +20,20 @@ function initializeComposer(api) {
 //topic.currentPost: 1
  api.composerBeforeSave(() => {
    console.log("Before saving, do something!");
+
+   if (this.action != 'edit') {
+       return;
+     }
+//getting this part to run: https://kleinfreund.de/how-to-create-a-discourse-plugin/#sending-data
+     const noteRecord = this.store.createRecord('note', {
+       id: Date.now(),
+       date: date
+     });
+
+     noteRecord.save()
+       .then(console.log)
+       .catch(console.error);
+   }
  })
 
 
