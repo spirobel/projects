@@ -13,8 +13,14 @@ enabled_site_setting :projects_enabled
 PLUGIN_NAME ||= "Project".freeze
 
 load File.expand_path('../lib/projects/engine.rb', __FILE__)
-
 after_initialize do
+  load File.expand_path('../app/controllers/notes_controller.rb', __FILE__)
+
+  Discourse::Application.routes.append do
+
+
+  put '/notes/:note_id' => 'notes#update'
+end
   PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
   add_permitted_post_create_param({:projects_task_attributes => [:duration]},:hash)
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
