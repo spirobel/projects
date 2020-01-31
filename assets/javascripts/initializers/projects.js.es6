@@ -11,8 +11,23 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task_attributes');
   //CREATE
 //we can work with this: second arg gives us date,time pr_t_att etc
-  api.onAppEvent('topic:created', () => {
+//          this.appEvents.trigger("topic:created", createdPost, composer);
+  api.onAppEvent('topic:created', function(createdPost,composer){
        console.log('a topic was created');
+       //getting this part to run: https://kleinfreund.de/how-to-create-a-discourse-plugin/#sending-data
+       //http://0.0.0.0:9292/notes/1580254055373
+            const noteRecord = this.store.createRecord('note', {
+              id: createdPost.topic_id,
+              date: composer.date
+            });
+
+          noteRecord.save()  .then(result => {
+            //attach the new object to the topic here
+
+                 this.notes.pushObject(result.target);
+               })
+               .catch(console.error);
+
      });
 //UPDATE
 //this.date time pr_t_att etc is all there
@@ -26,16 +41,18 @@ function initializeComposer(api) {
 //getting this part to run: https://kleinfreund.de/how-to-create-a-discourse-plugin/#sending-data
 //http://0.0.0.0:9292/notes/1580254055373
      const noteRecord = this.store.createRecord('note', {
-       id: Date.now(),
+       id: this.topic.id,
        date: this.date
      });
 
    noteRecord.save()  .then(result => {
+     //attach the new object to the topic here
+
           this.notes.pushObject(result.target);
         })
         .catch(console.error);
 }
-// actually we should return  a promise that always resolves because the save should not be aborted 
+// actually we should return  a promise that always resolves because the save should not be aborted
 
     return Promise.resolve();
  });
