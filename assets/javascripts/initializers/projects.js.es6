@@ -63,7 +63,21 @@ function initializeComposer(api) {
 //DRAFT observe fields that should be saved periodically to draft
   @observes("model.date", "model.time")
   __shouldSaveDraft() {
-  this.get('model').dataChanged();
+    //dataChanged() {
+    if (this.model && this.model.draftStatus && !this.model._clearingStatus) {
+      const m = this.model;
+      const draftStatus = m.draftStatus;
+      m._clearingStatus = later(
+        m,
+        () => {
+          m.setProperties({ draftStatus: null, draftConflictUser: null });
+          m._clearingStatus = null;
+          m.setProperties({ draftSaving: false, draftSaved: false });
+        },
+        Ember.Test ? 0 : 1000
+      );
+    }
+
   debounce(this, this._saveDraft, 2000);
 },
   actions: {
