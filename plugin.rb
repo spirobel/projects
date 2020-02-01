@@ -14,6 +14,9 @@ PLUGIN_NAME ||= "Project".freeze
 
 load File.expand_path('../lib/projects/engine.rb', __FILE__)
 after_initialize do
+  add_to_serializer :topic_view, :projects_task do
+    object.topic.projects_task
+  end
   PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
   add_permitted_post_create_param({:projects_task_attributes => [:duration]},:hash)
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
