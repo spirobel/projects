@@ -36,7 +36,6 @@ after_initialize do
 Rails.logger.level = 0
   Topic.class_eval do
     has_one :projects_task, dependent: :destroy, :inverse_of => :topic
-    accepts_nested_attributes_for :projects_task
 
     after_save do
       puts 'huhu'

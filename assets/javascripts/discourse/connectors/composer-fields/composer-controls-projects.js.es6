@@ -6,7 +6,7 @@ export default {
     //we will set the props here. attrs.model
     this.model.setProperties({
       projects_task_attributes:{duration:1},
-      date: moment()
+      begin: moment()
         .add(1, "day")
         .format("YYYY-MM-DD"),
       time: moment()

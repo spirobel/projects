@@ -5,11 +5,11 @@ import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 function initializeComposer(api) {
   //DRAFT
-  Composer.serializeToDraft('date');
+  Composer.serializeToDraft('begin');
   Composer.serializeToDraft('time');
   Composer.serializeToDraft('projects_task_attributes');
   //CREATE
-//we can work with this: second arg gives us date,time pr_t_att etc
+//we can work with this: second arg gives us begin,time pr_t_att etc
 //          this.appEvents.trigger("topic:created", createdPost, composer);
   api.onAppEvent('topic:created', function(createdPost,composer){
        console.log('a topic was created');
@@ -17,7 +17,7 @@ function initializeComposer(api) {
        //http://0.0.0.0:9292/notes/1580254055373
             const noteRecord = this.store.createRecord('note', {
               id: createdPost.topic_id,
-              date: composer.date
+              begin: composer.begin
             });
 
           noteRecord.save()  .then(result => {
@@ -29,7 +29,7 @@ function initializeComposer(api) {
 
      });
 //UPDATE
-//this.date time pr_t_att etc is all there
+//this.begin time pr_t_att etc is all there
 //also:this.action: "edit" and this.topic.id
 //topic.currentPost: 1
  api.composerBeforeSave(function() {
@@ -41,7 +41,7 @@ function initializeComposer(api) {
 //http://0.0.0.0:9292/notes/1580254055373
      const noteRecord = this.store.createRecord('note', {
        id: this.topic.id,
-       date: this.date
+       begin: this.begin
      });
 
    noteRecord.save()  .then(result => {
@@ -59,7 +59,7 @@ function initializeComposer(api) {
 
   api.modifyClass("controller:composer", {
 //DRAFT observe fields that should be saved periodically to draft
-  @observes("model.date", "model.time")
+  @observes("model.begin", "model.time")
   __shouldSaveDraft() {
     //dataChanged() {
     if (this.model && this.model.draftStatus && !this.model._clearingStatus) {
