@@ -39,9 +39,10 @@ function initializeComposer(api) {
 
 //getting this part to run: https://kleinfreund.de/how-to-create-a-discourse-plugin/#sending-data
 //http://0.0.0.0:9292/notes/1580254055373
+let bla = this.get('topic.projects_task.begin')
      const noteRecord = this.store.createRecord('note', {
        id: this.topic.id,
-       begin: this.begin
+       begin: bla
      });
 
    noteRecord.save()  .then(result => {
