@@ -5,8 +5,6 @@ export default Ember.Component.extend({
 
   actions: {
    openpicker() {
-     //imitating poll plugin https://github.com/discourse/discourse/blob/master/plugins/poll/assets/javascripts/initializers/add-poll-ui-builder.js.es6
-
      if(this.datetime == ""){
      this.setProperties({
        date: moment()
@@ -25,7 +23,6 @@ export default Ember.Component.extend({
          .format("HH:mm")
      });
    }
-     //TODO: set time and date with momentjs here
      showModal("task-ui-builder").setProperties({ updateButtonLabel: this.updateButtonLabel,
                                                     submit: this.submit,
                                                     date: this.date,
