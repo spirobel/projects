@@ -13,6 +13,7 @@ export default Ember.Controller.extend({
         this.date + " " + this.time,
         "YYYY-MM-DD HH:mm"
       ).toISOString();
+      this.updateButtonLabel(dt);
       this.submit(dt);
       /*
       this.setProperties({
