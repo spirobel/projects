@@ -10,7 +10,8 @@ module Project
          note_id = params[:topic_id]
          note = {
            'id' => note_id,
-           'begin' => params[:note][:begin]
+           'begin' => params[:note][:begin],
+           'end' => params[:note][:end]
          }
 
          puts "update",note_id, note
@@ -23,7 +24,9 @@ module Project
           note_id = params[:topic_id]
           note = {
             'id' => note_id,
-            'begin' => params[:note][:begin]
+            'begin' => params[:note][:begin],
+            'end' => params[:note][:end]
+
           }
             puts "creation",note_id, note
             render json: { note: note }
@@ -34,7 +37,7 @@ module Project
     end
     private
       def task_params
-        params.require(:note).permit( :begin)
+        params.require(:note).permit( :begin,:end)
       end
   end
 end
