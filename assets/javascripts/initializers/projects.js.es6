@@ -5,15 +5,17 @@ import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 function initializeComposer(api) {
   //DRAFT
-  Composer.serializeToDraft('begin');
-  Composer.serializeToDraft('time');
-  Composer.serializeToDraft('projects_task_attributes');
+  Composer.serializeToDraft('projects_task_duration');
+  Composer.serializeToDraft('projects_task_begin');
+  Composer.serializeToDraft('projects_task_end');
+
   Composer.reopen({
     save_projects_task(topic_id){
            const noteRecord = this.store.createRecord('note', {
              id: topic_id,
              begin: this.projects_task_begin,
-             end: this.projects_task_end
+             end: this.projects_task_end,
+             duration: this.projects_task_duration
            });
 
          noteRecord.save()  .then(result => {

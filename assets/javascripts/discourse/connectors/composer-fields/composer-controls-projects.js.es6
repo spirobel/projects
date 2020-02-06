@@ -12,6 +12,9 @@ export default {
    end(end) {
       this.set("model.projects_task_end",end);
    },
+   duration(duration) {
+      this.set("model.projects_task_duration",duration);
+   },
 
 
  }

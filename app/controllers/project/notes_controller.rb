@@ -11,7 +11,9 @@ module Project
          note = {
            'id' => note_id,
            'begin' => params[:note][:begin],
-           'end' => params[:note][:end]
+           'end' => params[:note][:end],
+           'duration' => params[:note][:duration]
+
          }
 
          puts "update",note_id, note
@@ -25,7 +27,9 @@ module Project
           note = {
             'id' => note_id,
             'begin' => params[:note][:begin],
-            'end' => params[:note][:end]
+            'end' => params[:note][:end],
+            'duration' => params[:note][:duration]
+
 
           }
             puts "creation",note_id, note
@@ -37,7 +41,7 @@ module Project
     end
     private
       def task_params
-        params.require(:note).permit( :begin,:end)
+        params.require(:note).permit( :begin,:end,:duration)
       end
   end
 end
