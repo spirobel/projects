@@ -12,9 +12,9 @@ export default Ember.Controller.extend({
       let dt = moment(
         this.date + " " + this.time,
         "YYYY-MM-DD HH:mm"
-      ).toISOString();
+      );
       this.updateButtonLabel(dt);
-      this.submit(dt);
+      this.submit(dt.toISOString());
       /*
       this.setProperties({
         datetime: moment(
