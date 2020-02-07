@@ -5,7 +5,7 @@ export default Ember.Component.extend({
 
   actions: {
    openpicker() {
-     if(this.datetime == ""){
+     if(this.datetime == "" || !this.datetime){
      this.setProperties({
        date: moment()
          .add(1, "day")
