@@ -7,12 +7,10 @@ export default Ember.Component.extend({
    openpicker() {
      if(this.duration){
        this.setProperties({
-         durationString: moment.duration(duration*1000).toISOString()
+         durationString: moment.duration(this.duration*1000).toISOString()
        });
    }
-   else{
 
-   }
      showModal("duration-modal").setProperties({ updateButtonLabel: this.updateButtonLabel,
                                                     submit: this.submit,
                                                     durationString: this.durationString});
