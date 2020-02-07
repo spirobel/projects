@@ -9,17 +9,17 @@ function initializeComposer(api) {
   Topic.reopen({
   @computed('projects_task.begin')
   projectsTaskBeginPretty(begin) {
-    //console.log("topic reopen begin")
+    if(!begin)return;
     return "Begin: "+moment(begin).format("D.M.Y, h:mm a");
   },
   @computed('projects_task.end')
   projectsTaskEndPretty(end) {
-    //console.log("topic reopen begin")
+    if(!end)return;
     return "End: "+moment(end).format("D.M.Y, h:mm a");
   },
   @computed('projects_task.duration')
   projectsTaskDurationPretty(duration) {
-    //console.log("topic reopen begin")
+    if(!duration)return;
     return "Duration: "+moment.duration(duration*1000).humanize();
   }
 });
