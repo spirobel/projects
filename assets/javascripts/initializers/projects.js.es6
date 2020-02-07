@@ -3,7 +3,26 @@ import { default as computed, observes, on } from 'ember-addons/ember-computed-d
 import showModal from "discourse/lib/show-modal";
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
+import Topic from 'discourse/models/topic';
 function initializeComposer(api) {
+  //READ
+  Topic.reopen({
+  @computed('projects_task.begin')
+  projectsTaskBeginPretty(begin) {
+    //console.log("topic reopen begin")
+    return "Begin: "+moment(begin).format("D.M.Y, h:mm a");
+  },
+  @computed('projects_task.end')
+  projectsTaskEndPretty(end) {
+    //console.log("topic reopen begin")
+    return "End: "+moment(end).format("D.M.Y, h:mm a");
+  },
+  @computed('projects_task.duration')
+  projectsTaskDurationPretty(duration) {
+    //console.log("topic reopen begin")
+    return "Duration: "+moment.duration(duration*1000).humanize();
+  }
+});
   //DRAFT
   Composer.serializeToDraft('projects_task_duration');
   Composer.serializeToDraft('projects_task_begin');
