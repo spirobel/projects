@@ -5,5 +5,8 @@ export default Ember.Controller.extend({
   { id: 3, name: "baz" }
 ],
   actions: {
+    lockedChange(){
+      console.log("this");
+    },
   }
 });
