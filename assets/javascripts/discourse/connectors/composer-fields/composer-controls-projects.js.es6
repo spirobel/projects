@@ -3,9 +3,14 @@ import showModal from "discourse/lib/show-modal";
 import computed from "discourse-common/utils/decorators";
 
 export default {
-//TODO set begin/ end values etc to default/ topic model in setupComponent
-// right now we get 400 because params will be nil if we dont change them
 setupComponent(attrs, component) {
+  this.setProperties({
+    dropdowncontent:[
+    { id: 0, name: "duration" },
+    { id: 1, name: "begin" },
+    { id: 2, name: "end" }
+    ]
+  });
     if(this.model.topic && this.model.topic.projects_task){
       this.model.setProperties({
         projects_task_begin:this.model.topic.projects_task.begin,
@@ -16,6 +21,9 @@ setupComponent(attrs, component) {
 console.log("composerffieldssss")
 },
   actions: {
+   lockedChange(){
+     console.log("this");
+   },
    begin(begin) {
       this.set("model.projects_task_begin",begin);
    },
