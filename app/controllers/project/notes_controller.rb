@@ -12,7 +12,9 @@ module Project
            'id' => note_id,
            'begin' => params[:note][:begin],
            'end' => params[:note][:end],
-           'duration' => params[:note][:duration]
+           'duration' => params[:note][:duration],
+           'locked' => params[:note][:locked]
+
 
          }
 
@@ -28,7 +30,9 @@ module Project
             'id' => note_id,
             'begin' => params[:note][:begin],
             'end' => params[:note][:end],
-            'duration' => params[:note][:duration]
+            'duration' => params[:note][:duration],
+            'locked' => params[:note][:locked]
+
 
 
           }
@@ -41,7 +45,7 @@ module Project
     end
     private
       def task_params
-        params.require(:note).permit( :begin,:end,:duration)
+        params.require(:note).permit( :begin,:end,:duration,:locked)
       end
   end
 end

@@ -15,14 +15,23 @@ setupComponent(attrs, component) {
       this.model.setProperties({
         projects_task_begin:this.model.topic.projects_task.begin,
         projects_task_end:this.model.topic.projects_task.end,
-        projects_task_duration:this.model.topic.projects_task.duration
+        projects_task_duration:this.model.topic.projects_task.duration,
+        projects_task_locked: this.model.topic.projects_task.locked
       });
+      //TODO feed this back into dropdown value
+      console.log(this.model.topic.projects_task.locked);
     }
+    else{
+      this.model.setProperties({
+      projects_task_locked: 'duration'  });
+    }
+
 console.log("composerffieldssss")
 },
   actions: {
-   lockedChange(){
-     console.log("this");
+   lockedChange(id,elm){
+     this.model.setProperties({
+     projects_task_locked: elm.name  });
    },
    begin(begin) {
       this.set("model.projects_task_begin",begin);
