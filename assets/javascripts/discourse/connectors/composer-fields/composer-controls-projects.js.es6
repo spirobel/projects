@@ -6,9 +6,9 @@ export default {
 setupComponent(attrs, component) {
   this.setProperties({
     dropdowncontent:[
-    { id: 0, name: "duration" },
-    { id: 1, name: "begin" },
-    { id: 2, name: "end" }
+    "duration",
+    "begin",
+    "end"
     ]
   });
     if(this.model.topic && this.model.topic.projects_task){
@@ -18,8 +18,9 @@ setupComponent(attrs, component) {
         projects_task_duration:this.model.topic.projects_task.duration,
         projects_task_locked: this.model.topic.projects_task.locked
       });
-      //TODO feed this back into dropdown value
-      console.log(this.model.topic.projects_task.locked);
+      this.setProperties({
+        value: this.model.topic.projects_task.locked
+      })
     }
     else{
       this.model.setProperties({

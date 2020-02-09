@@ -3,6 +3,6 @@
   {{projects-datetime-picker datetimeLabel="end" datetime=model.projects_task_end submit=(action "end")}}
   {{projects-duration-picker Label="duration" duration=model.projects_task_duration submit=(action "duration")}}
   <div>
-  {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange")}}
+  {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=value}}
 </div>
 </div>
