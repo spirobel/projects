@@ -1,6 +1,7 @@
 import { getOwner } from 'discourse-common/lib/get-owner';
 import showModal from "discourse/lib/show-modal";
 import computed from "discourse-common/utils/decorators";
+import { later } from "@ember/runloop";
 
 export default {
   setupComponent(attrs, component) {
@@ -46,6 +47,9 @@ export default {
    lockedChange(name){
      this.model.setProperties({
      projects_task_locked: name  });
+     later(this, function(){
+       this.set('dropdownFocused',false);
+    }, 50);
      //manageLocked();
      if (this.model.projects_task_locked === "begin") {
        this.set('begindisabled', true)
