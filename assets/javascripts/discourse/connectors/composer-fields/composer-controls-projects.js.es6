@@ -3,14 +3,14 @@ import showModal from "discourse/lib/show-modal";
 import computed from "discourse-common/utils/decorators";
 
 export default {
-setupComponent(attrs, component) {
-  this.setProperties({
-    dropdowncontent:[
-    "duration",
-    "begin",
-    "end"
-    ]
-  });
+  setupComponent(attrs, component) {
+    this.setProperties({
+      dropdowncontent:[
+        "duration",
+        "begin",
+        "end"
+      ]
+    });
     if(this.model.topic && this.model.topic.projects_task){
       this.model.setProperties({
         projects_task_begin:this.model.topic.projects_task.begin,
@@ -27,12 +27,39 @@ setupComponent(attrs, component) {
       projects_task_locked: 'duration'  });
     }
 
-console.log("composerffieldssss")
+ //manageLocked();
+ if (this.model.projects_task_locked === "begin") {
+   this.set('begindisabled', true)
+   this.set('durationdisabled', false)
+   this.set('enddisabled', false)
+ } else if (this.model.projects_task_locked === "end") {
+   this.set('begindisabled', false)
+   this.set('durationdisabled', false)
+   this.set('enddisabled', true)
+ } else {
+   this.set('begindisabled', false)
+   this.set('durationdisabled', true)
+   this.set('enddisabled', false)
+ }
 },
   actions: {
-   lockedChange(id,elm){
+   lockedChange(name){
      this.model.setProperties({
-     projects_task_locked: elm.name  });
+     projects_task_locked: name  });
+     //manageLocked();
+     if (this.model.projects_task_locked === "begin") {
+       this.set('begindisabled', true)
+       this.set('durationdisabled', false)
+       this.set('enddisabled', false)
+     } else if (this.model.projects_task_locked === "end") {
+       this.set('begindisabled', false)
+       this.set('durationdisabled', false)
+       this.set('enddisabled', true)
+     } else {
+       this.set('begindisabled', false)
+       this.set('durationdisabled', true)
+       this.set('enddisabled', false)
+     }
    },
    begin(begin) {
       this.set("model.projects_task_begin",begin);
