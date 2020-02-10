@@ -47,9 +47,6 @@ export default {
    lockedChange(name){
      this.model.setProperties({
      projects_task_locked: name  });
-     later(this, function(){
-       this.set('dropdownFocused',false);
-    }, 50);
      //manageLocked();
      if (this.model.projects_task_locked === "begin") {
        this.set('begindisabled', true)
