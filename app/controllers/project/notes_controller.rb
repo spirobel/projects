@@ -17,7 +17,7 @@ module Project
 
 
          }
-
+         puts @projects_task
          puts "update",note_id, note
 
          render json: { note: note }
@@ -44,6 +44,38 @@ module Project
 #task exists > update; else > create task
     end
     private
+      def handle_locked(params)
+        @projects_task.assign_attributes(task_params)
+        if @projects_task.locked == :duration and params[:note][:modified] == 'begin' and @projects_task.duration
+          @projects_task.end = @projects_task.begin + @projects_task.duration
+        elsif @projects_task.locked == :duration and params[:note][:modified] == 'begin'
+          @projects_task.duration = @projects_task.end - @projects_task.begin if @projects_task.end
+        elsif @projects_task.locked == :duration and params[:note][:modified] == 'end' and @projects_task.duration
+          @projects_task.begin = @projects_task.end - @projects_task.duration
+        elsif @projects_task.locked == :duration and params[:note][:modified] == 'end'
+        elsif @projects_task.locked == :begin and params[:note][:modified] == 'begin' and @projects_task.begin
+        elsif @projects_task.locked == :begin and params[:note][:modified] == 'begin'
+        elsif @projects_task.locked == :begin and params[:note][:modified] == 'end' and @projects_task.begin
+        elsif @projects_task.locked == :begin and params[:note][:modified] == 'end'
+        elsif @projects_task.locked == :end and params[:note][:modified] == 'begin' and @projects_task.end
+        elsif @projects_task.locked == :end and params[:note][:modified] == 'begin'
+        elsif @projects_task.locked == :end and params[:note][:modified] == 'end' and @projects_task.end
+        elsif @projects_task.locked == :end and params[:note][:modified] == 'end'
+
+          #case 1:  modified == begin
+          if params[:note][:modified] == 'begin'
+            @projects_task.end = params[:note][:begin]
+          #case 2: modified == end
+          else
+            @projects_task.begin = params[:note][:begin]
+
+          end
+        elsif @projects_task.locked == :begin
+        else #:end
+        end
+
+
+      end
       def task_params
         params.require(:note).permit( :begin,:end,:duration,:locked)
       end

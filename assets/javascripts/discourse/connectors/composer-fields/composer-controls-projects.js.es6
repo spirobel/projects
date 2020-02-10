@@ -62,14 +62,29 @@ export default {
        this.set('enddisabled', false)
      }
    },
+   //TODO compute non locked field
    begin(begin) {
       this.set("model.projects_task_begin",begin);
+      this.set("model.projects_task_modified","begin")
+      //two cases: end or duration locked
+      //locked end
+      //locked duration
    },
    end(end) {
       this.set("model.projects_task_end",end);
+      this.set("model.projects_task_modified","end")
+
+      //two cases: begin or duration locked
+      //locked begin
+      //locked duration
    },
    duration(duration) {
       this.set("model.projects_task_duration",duration);
+      this.set("model.projects_task_modified","duration")
+
+      //two cases: end or begin locked
+      //locked end
+      //locked begin
    },
 
 

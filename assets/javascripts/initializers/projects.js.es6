@@ -28,6 +28,7 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task_begin');
   Composer.serializeToDraft('projects_task_end');
   Composer.serializeToDraft('projects_task_locked');
+  Composer.serializeToDraft('projects_task_modified');
 
 
   Composer.reopen({
@@ -37,7 +38,8 @@ function initializeComposer(api) {
              begin: this.projects_task_begin,
              end: this.projects_task_end,
              duration: this.projects_task_duration,
-             locked: this.projects_task_locked
+             locked: this.projects_task_locked,
+             modified: this.projects_task_modified
            });
 
          noteRecord.save()  .then(result => {
