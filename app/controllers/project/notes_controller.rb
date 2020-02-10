@@ -6,7 +6,8 @@ module Project
        #UPDATE
        puts "huhunach first"
        if @projects_task
-         @projects_task.update(task_params)
+        # @projects_task.update(task_params)
+        handle_locked()
          note_id = params[:topic_id]
          note = {
            'id' => note_id,
@@ -17,7 +18,7 @@ module Project
 
 
          }
-         puts @projects_task
+        puts @projects_task.inspect
          puts "update",note_id, note
 
          render json: { note: note }
@@ -44,37 +45,49 @@ module Project
 #task exists > update; else > create task
     end
     private
-      def handle_locked(params)
+      def handle_locked
         @projects_task.assign_attributes(task_params)
-        if @projects_task.locked == :duration and params[:note][:modified] == 'begin' and @projects_task.duration
+        #1case duration locked and begin modified
+        puts params.inspect
+        if @projects_task.locked == "duration" && params[:note][:modified] == 'begin' && @projects_task.duration
+          puts "1case duration locked and begin modified"
           @projects_task.end = @projects_task.begin + @projects_task.duration
-        elsif @projects_task.locked == :duration and params[:note][:modified] == 'begin'
-          @projects_task.duration = @projects_task.end - @projects_task.begin if @projects_task.end
-        elsif @projects_task.locked == :duration and params[:note][:modified] == 'end' and @projects_task.duration
+        #2case duration locked and end modified
+        elsif @projects_task.locked == "duration" && params[:note][:modified] == 'end' && @projects_task.duration
+          puts "2case duration locked and end modified"
           @projects_task.begin = @projects_task.end - @projects_task.duration
-        elsif @projects_task.locked == :duration and params[:note][:modified] == 'end'
-        elsif @projects_task.locked == :begin and params[:note][:modified] == 'begin' and @projects_task.begin
-        elsif @projects_task.locked == :begin and params[:note][:modified] == 'begin'
-        elsif @projects_task.locked == :begin and params[:note][:modified] == 'end' and @projects_task.begin
-        elsif @projects_task.locked == :begin and params[:note][:modified] == 'end'
-        elsif @projects_task.locked == :end and params[:note][:modified] == 'begin' and @projects_task.end
-        elsif @projects_task.locked == :end and params[:note][:modified] == 'begin'
-        elsif @projects_task.locked == :end and params[:note][:modified] == 'end' and @projects_task.end
-        elsif @projects_task.locked == :end and params[:note][:modified] == 'end'
-
-          #case 1:  modified == begin
-          if params[:note][:modified] == 'begin'
-            @projects_task.end = params[:note][:begin]
-          #case 2: modified == end
-          else
-            @projects_task.begin = params[:note][:begin]
-
-          end
-        elsif @projects_task.locked == :begin
-        else #:end
+        #3case duration locked and duration not set
+        elsif @projects_task.locked == "duration" && !(params[:note][:modified] == 'duration') && !@projects_task.duration
+          puts "3case duration locked and duration not set"
+          @projects_task.duration = @projects_task.end - @projects_task.begin if @projects_task.end && @projects_task.begin
+        #4case begin locked and duration modified
+        elsif @projects_task.locked == "begin" && params[:note][:modified] == 'duration' && @projects_task.begin
+          puts "4case begin locked and duration modified"
+          @projects_task.end = @projects_task.begin + @projects_task.duration
+        elsif @projects_task.locked == "begin" and params[:note][:modified] == 'begin'
+        #5case begin locked and end modified
+        elsif @projects_task.locked == "begin" && params[:note][:modified] == 'end' && @projects_task.begin
+          puts "5case begin locked and end modified"
+          @projects_task.duration = @projects_task.end - @projects_task.begin
+        #6case begin locked and begin not set
+        elsif @projects_task.locked == "begin" && !(params[:note][:modified] == 'begin') && !@projects_task.begin
+          puts "6case begin locked and begin not set"
+          @projects_task.begin = @projects_task.end - @projects_task.duration if @projects_task.end && @projects_task.duration
+        #7case end locked and begin modified
+        elsif @projects_task.locked == "end" && params[:note][:modified] == 'begin' && @projects_task.end
+          @projects_task.duration = @projects_task.end - @projects_task.begin
+          puts "7case end locked and begin modified"
+        elsif @projects_task.locked == "end" and params[:note][:modified] == 'begin'
+        #8case end locked and duration modified
+        elsif @projects_task.locked == "end" && params[:note][:modified] == 'end' && @projects_task.end
+          puts "8case end locked and duration modified"
+          @projects_task.begin = @projects_task.end - @projects_task.duration
+        #9case end locked and end not set
+        elsif @projects_task.locked == "end" && !(params[:note][:modified] == 'end') && !@projects_task.end
+          puts "9case end locked and end not set"
+          @projects_task.end = @projects_task.begin + @projects_task.duration if @projects_task.begin && @projects_task.duration
         end
-
-
+        @projects_task.save
       end
       def task_params
         params.require(:note).permit( :begin,:end,:duration,:locked)
