@@ -81,7 +81,7 @@ result.target.appEvents.trigger("composer-messages:create", {
    if (this.action == 'edit') {
 
   this.save_projects_task(this.topic.id);
-  return Promise.reject(new Error("asdasd"));
+//  return Promise.reject(new Error("asdasd"));
 
 // actually we should return  a promise that always resolves because the save should not be aborted
 }
