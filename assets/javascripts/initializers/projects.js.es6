@@ -42,9 +42,21 @@ function initializeComposer(api) {
              modified: this.projects_task_modified
            });
 
-         noteRecord.save()  .then(result => {
+         noteRecord.save()  .then(function(result) {
            //attach the new object to the topic here
 
+
+                const body = I18n.t("composer.duplicate_link", {
+  domain: "info.domain",
+  username: "info.username",
+  post_url: "topic.urlForPostNumber(info.post_number)",
+  ago: "shortDate(info.posted_at)"
+});
+result.target.appEvents.trigger("composer-messages:create", {
+  extraClass: "custom-body",
+  templateName: "custom-body",
+  body
+});
                 this.notes.pushObject(result.target);
               })
               .catch(console.error);
@@ -68,7 +80,9 @@ function initializeComposer(api) {
    console.log("Before saving, do something!");
    if (this.action == 'edit') {
 
- this.save_projects_task(this.topic.id);
+  this.save_projects_task(this.topic.id);
+  return Promise.reject(new Error("asdasd"));
+
 // actually we should return  a promise that always resolves because the save should not be aborted
 }
     return Promise.resolve();
