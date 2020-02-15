@@ -9,8 +9,13 @@ import { ajax } from "discourse/lib/ajax";
 function initializeComposer(api) {
   TopicList.reopenClass({
       topics_array(topic_ids) {
+      const store = Discourse.__container__.lookup("service:store");
       const url = `${Discourse.getURL("/topics/topics_array")}.json?topic_ids=${topic_ids.join(",")}`;
-      return ajax({ url});
+      return ajax({ url}).then(results => {
+        const topicMap = [];
+        results.topic_list.topics.forEach(t => (topicMap.push(store.createRecord("topic", t))));
+        return topicMap;
+      });
     }
   });
 
