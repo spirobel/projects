@@ -4,7 +4,16 @@ import showModal from "discourse/lib/show-modal";
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 import Topic from 'discourse/models/topic';
+import TopicList from 'discourse/models/topic-list';
+import { ajax } from "discourse/lib/ajax";
 function initializeComposer(api) {
+  TopicList.reopenClass({
+      topics_array(topic_ids) {
+      const url = `${Discourse.getURL("/topics/topics_array")}.json?topic_ids=${topic_ids.join(",")}`;
+      return ajax({ url});
+    }
+  });
+
   //READ
   Topic.reopen({
   @computed('projects_task.begin')

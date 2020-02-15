@@ -39,6 +39,25 @@ after_initialize do
       end
     end
   end
+  class ::TopicQuery
+    def list_topics_array()
+      create_list(:topics)
+    end
+  end
+  class ::ListController
+    before_action :ensure_logged_in, except: [:topics_array]
+    def topics_array
+      list_opts = build_topic_list_options
+      list = TopicQuery.new(current_user, list_opts).send("list_topics_array")
+      respond_with_list(list)
+    end
+  end
+  Discourse::Application.routes.prepend do
+     scope "/topics" do
+  get "topics_array" => "list#topics_array",as: "topics_array",  defaults: { format: :json }
+end
+end
+
 Rails.logger.level = 0
   Topic.class_eval do
     has_one :projects_task, dependent: :destroy, :inverse_of => :topic
