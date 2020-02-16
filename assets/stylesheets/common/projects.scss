@@ -6,3 +6,16 @@
 }
 //margin: 4px 6px 4px 0;
 //on the button
+
+.dependencies-modal {
+  .modal-body {
+    position: relative;
+    height: 400px;
+    width: 700px;
+  }
+  &.small .modal-body {
+    height: 310px;
+  }
+
+
+}
