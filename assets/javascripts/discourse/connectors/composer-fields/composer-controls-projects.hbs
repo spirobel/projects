@@ -2,7 +2,7 @@
   {{projects-datetime-picker datetimeLabel="begin" datetime=model.projects_task_begin submit=(action "begin") disabled=begindisabled}}
   {{projects-duration-picker Label="duration" duration=model.projects_task_duration submit=(action "duration") disabled=durationdisabled}}
   {{projects-datetime-picker datetimeLabel="end" datetime=model.projects_task_end submit=(action "end") disabled=enddisabled}}
-  <div>
-  {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=value }}
-</div>
+
+  {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=value}}
+  {{projects-dependencies-picker submit=(action "dependencies") deponTopics=deponTopics depbyTopics=depbyTopics}}
 </div>

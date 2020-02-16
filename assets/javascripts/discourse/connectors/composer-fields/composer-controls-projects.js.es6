@@ -10,7 +10,11 @@ export default {
         "duration",
         "begin",
         "end"
-      ]
+      ],
+      deponTopics:[1,2,8],
+      depbyTopics:[1,2,4],
+
+
     });
     if(this.model.topic && this.model.topic.projects_task){
       this.model.setProperties({
@@ -85,6 +89,10 @@ export default {
       //two cases: end or begin locked
       //locked end
       //locked begin
+   },
+   dependencies(deponTopics, depbyTopics){
+     console.log(deponTopics)
+     console.log(depbyTopics)
    },
 
 
