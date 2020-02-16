@@ -1,0 +1,35 @@
+{{#each selectedTopics as |t|}}
+  <div class='controls existing-topic'>
+    <label class='radio'>
+      <input type='radio'  {{action "unselectTopic" t}}>
+      {{topic-status topic=t}}
+      <span class="topic-title">
+        {{t.title}}
+      </span>
+    </label>
+  </div>
+{{/each}}
+<label >{{i18n labelText}}</label>
+
+{{text-field value=topicTitle placeholderKey="choose_topic.title.placeholder"}}
+
+
+{{#if loading}}
+  <p>{{i18n 'loading'}}</p>
+{{else}}
+  {{#if noResults}}
+    <p>{{i18n 'choose_topic.none_found'}}</p>
+  {{else}}
+    {{#each topics as |t|}}
+      <div class='controls existing-topic'>
+        <label class='radio'>
+          <input type='radio'  {{action "chooseTopic" t}}>
+          {{raw "topic-status" topic=t}}
+          <span class="topic-title">
+            {{t.title}} Begin: {{t.projects_task.begin}}
+          </span>
+        </label>
+      </div>
+    {{/each}}
+  {{/if}}
+{{/if}}
