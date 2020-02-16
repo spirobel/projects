@@ -1,0 +1,27 @@
+
+<div>
+<ul class="nav nav-pills">
+<li><a href {{action "selectdepon"}} class="{{if depon 'active'}}">dependent on</a></li>
+<li><a href {{action "selectdepby"}} class="{{if depby 'active'}}">depended on by</a></li>
+
+</ul>
+{{#d-modal-body title="dependencies" }}
+  <form class="">
+
+
+    {{#if depon}}
+    dependent on:
+    {{topic-selector selectedTopicsID=deponTopics}}
+    {{else}}
+    depended on by:
+    {{topic-selector selectedTopicsID=depbyTopics}}
+    {{/if}}
+
+
+  </form>
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button action=(action "closeDuration") icon="chart-bar" class='btn-primary' label='close'}}
+</div>
+</div>
