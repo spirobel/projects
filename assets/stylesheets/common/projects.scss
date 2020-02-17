@@ -1,5 +1,7 @@
 .add-task-button-container {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
+  width: 50%;
   .btn{
     margin: 4px 6px 4px 0;
   }
