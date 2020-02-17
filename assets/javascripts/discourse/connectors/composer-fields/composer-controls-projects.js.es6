@@ -11,26 +11,30 @@ export default {
         "begin",
         "end"
       ],
-      deponTopics:[1,2,8],
-      depbyTopics:[1,2,4],
-
-
     });
     if(this.model.topic && this.model.topic.projects_task){
+      //SET ON MODEL
       this.model.setProperties({
         projects_task_begin:this.model.topic.projects_task.begin,
         projects_task_end:this.model.topic.projects_task.end,
         projects_task_duration:this.model.topic.projects_task.duration,
-        projects_task_locked: this.model.topic.projects_task.locked
+        projects_task_locked: this.model.topic.projects_task.locked,
+        projects_task_depon: this.model.topic.projects_task.depon,
+        projects_task_depby: this.model.topic.projects_task.depby
       });
+      //SET ON COMPONTENT
       this.setProperties({
         value: this.model.topic.projects_task.locked
       })
     }
     else{
+      //SET ON MODEL
       this.model.setProperties({
       projects_task_locked: 'duration'  });
     }
+//be sure to make deps arrays: SET ON MODEL
+if(!this.projects_task_depon){this.model.set("projects_task_depon",[])}
+if(!this.projects_task_depby){this.model.set("projects_task_depby",[])}
 
  //manageLocked();
  if (this.model.projects_task_locked === "begin") {
@@ -66,29 +70,22 @@ export default {
        this.set('enddisabled', false)
      }
    },
-   //TODO compute non locked field
+   //TODO do dry runs in the backend and show error messages
+   //TODO dont actually disable buttons, just turn locked button grey
+   //TODO fix duration fill in with display function and also pretty duration
+   //TODO fix titles
+   //TODO add unset button for b e d
    begin(begin) {
       this.set("model.projects_task_begin",begin);
       this.set("model.projects_task_modified","begin")
-      //two cases: end or duration locked
-      //locked end
-      //locked duration
    },
    end(end) {
       this.set("model.projects_task_end",end);
       this.set("model.projects_task_modified","end")
-
-      //two cases: begin or duration locked
-      //locked begin
-      //locked duration
    },
    duration(duration) {
       this.set("model.projects_task_duration",duration);
       this.set("model.projects_task_modified","duration")
-
-      //two cases: end or begin locked
-      //locked end
-      //locked begin
    },
    dependencies(deponTopics, depbyTopics){
      console.log(deponTopics)

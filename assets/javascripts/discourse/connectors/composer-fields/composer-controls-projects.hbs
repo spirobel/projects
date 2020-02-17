@@ -4,5 +4,5 @@
   {{projects-datetime-picker datetimeLabel="end" datetime=model.projects_task_end submit=(action "end") disabled=enddisabled}}
 
   {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=value}}
-  {{projects-dependencies-picker submit=(action "dependencies") deponTopics=deponTopics depbyTopics=depbyTopics}}
+  {{projects-dependencies-picker submit=(action "dependencies") deponTopics=model.projects_task_depon depbyTopics=model.projects_task_depby}}
 </div>
