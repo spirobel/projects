@@ -87,9 +87,9 @@ if(!this.projects_task_depby){this.model.set("projects_task_depby",[])}
       this.set("model.projects_task_duration",duration);
       this.set("model.projects_task_modified","duration")
    },
-   dependencies(deponTopics, depbyTopics){
-     console.log(deponTopics)
-     console.log(depbyTopics)
+   dependencies(depon, depby){
+     this.set("model.projects_task_depon",depon)
+     this.set("model.projects_task_depby",depby)
    },
 
 
