@@ -13,6 +13,8 @@ export default {
       ],
     });
     if(this.model.topic && this.model.topic.projects_task){
+      console.log(this.model.projects_task_depon)
+
       //SET ON MODEL
       this.model.setProperties({
         projects_task_begin:this.model.topic.projects_task.begin,
@@ -22,6 +24,8 @@ export default {
         projects_task_depon: this.model.topic.projects_task.depon,
         projects_task_depby: this.model.topic.projects_task.depby
       });
+      console.log(this.model.projects_task_depon)
+
       //SET ON COMPONTENT
       this.setProperties({
         value: this.model.topic.projects_task.locked
@@ -33,8 +37,8 @@ export default {
       projects_task_locked: 'duration'  });
     }
 //be sure to make deps arrays: SET ON MODEL
-if(!this.projects_task_depon){this.model.set("projects_task_depon",[])}
-if(!this.projects_task_depby){this.model.set("projects_task_depby",[])}
+if(!this.model.projects_task_depon){this.model.set("projects_task_depon",[])}
+if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
 
  //manageLocked();
  if (this.model.projects_task_locked === "begin") {
@@ -88,7 +92,10 @@ if(!this.projects_task_depby){this.model.set("projects_task_depby",[])}
       this.set("model.projects_task_modified","duration")
    },
    dependencies(depon, depby){
+     console.log(this.model.projects_task_depon)
      this.set("model.projects_task_depon",depon)
+     console.log(this.model.projects_task_depon)
+
      this.set("model.projects_task_depby",depby)
    },
 

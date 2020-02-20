@@ -1,23 +1,23 @@
 module Project
   class NotesController < ApplicationController
     def update
-      puts params[:topic_id]
+      note_id = params[:topic_id]
+      note = {
+        'id' => note_id,
+        'begin' => params[:note][:begin],
+        'end' => params[:note][:end],
+        'duration' => params[:note][:duration],
+        'locked' => params[:note][:locked],
+        'depon' => params[:note][:depon],
+        'depby' => params[:note][:depby]
+      }
        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
        #UPDATE
        puts "huhunach first"
        if @projects_task
         # @projects_task.update(task_params)
         handle_locked()
-         note_id = params[:topic_id]
-         note = {
-           'id' => note_id,
-           'begin' => params[:note][:begin],
-           'end' => params[:note][:end],
-           'duration' => params[:note][:duration],
-           'locked' => params[:note][:locked]
-
-
-         }
+        handle_deps()
         puts @projects_task.inspect
          puts "update",note_id, note
 
@@ -26,17 +26,8 @@ module Project
 
           @topic = Topic.find(params[:topic_id])
           @projects_task = @topic.create_projects_task(task_params)
-          note_id = params[:topic_id]
-          note = {
-            'id' => note_id,
-            'begin' => params[:note][:begin],
-            'end' => params[:note][:end],
-            'duration' => params[:note][:duration],
-            'locked' => params[:note][:locked]
-
-
-
-          }
+          handle_locked()
+          handle_deps()
             puts "creation",note_id, note
             render json: { note: note }
         end
@@ -45,10 +36,23 @@ module Project
 #task exists > update; else > create task
     end
     private
+      def handle_deps
+#todo handle self dep
+#todo handle circular dep
+      if params[:note][:depon]
+        @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
+       end
+       if params[:note][:depby]
+         params[:note][:depby].each { |depby|
+           depby_task = ProjectsTask.where(["topic_id = ?",depby]).first
+
+             @projects_task.depended_on_by.create(depender_id: depby_task)
+          }
+      end
+      end
       def handle_locked
         @projects_task.assign_attributes(task_params)
         #1case duration locked and begin modified
-        puts params.inspect
         if @projects_task.locked == "duration" && params[:note][:modified] == 'begin' && @projects_task.duration
           puts "1case duration locked and begin modified"
           @projects_task.end = @projects_task.begin + @projects_task.duration
