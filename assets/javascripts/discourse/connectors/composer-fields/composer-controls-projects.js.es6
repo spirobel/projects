@@ -9,7 +9,8 @@ export default {
       dropdowncontent:[
         "duration",
         "begin",
-        "end"
+        "end",
+        "totally"
       ],
     });
     if(this.model.topic && this.model.topic.projects_task){
@@ -48,6 +49,10 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
    this.set('begindisabled', false)
    this.set('durationdisabled', false)
    this.set('enddisabled', true)
+ } else if (this.model.projects_task_locked === "totally") {
+   this.set('begindisabled', true)
+   this.set('durationdisabled', true)
+   this.set('enddisabled', true)
  } else {
    this.set('begindisabled', false)
    this.set('durationdisabled', true)
@@ -66,6 +71,10 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
      } else if (this.model.projects_task_locked === "end") {
        this.set('begindisabled', false)
        this.set('durationdisabled', false)
+       this.set('enddisabled', true)
+     } else if (this.model.projects_task_locked === "totally") {
+       this.set('begindisabled', true)
+       this.set('durationdisabled', true)
        this.set('enddisabled', true)
      } else {
        this.set('begindisabled', false)
