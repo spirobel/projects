@@ -55,6 +55,9 @@ function initializeComposer(api) {
          return result;
      }
      //START of decoration
+     if(!helper.attrs.firstPost || !helper.attrs.projects_task){
+       return;
+     }
      const endresult = [];
      const depons = linkList(helper.attrs.projects_task.depon_topics);
      if (depons){
