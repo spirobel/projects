@@ -39,9 +39,9 @@ module Project
       def handle_deps
 #todo handle self dep
 #todo handle circular dep
-      if params[:note][:depon]
+
         @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
-       end
+
        if params[:note][:depby]
          params[:note][:depby].each { |depby|
            depby_task = ProjectsTask.where(["topic_id = ?",depby]).first
