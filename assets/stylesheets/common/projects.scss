@@ -2,12 +2,18 @@
   display: flex;
   flex-wrap: wrap;
   width: 50%;
+  > div {
+    >div{
+      display: flex;
+    }
+    flex-grow: 1;
+  }
   .btn{
-    margin: 4px 6px 4px 0;
+    margin: 4px 6px 4px 0px;
+    flex-grow: 1;
+
   }
 }
-//margin: 4px 6px 4px 0;
-//on the button
 
 .dependencies-modal {
   .modal-body {
