@@ -7,10 +7,14 @@ class ProjectsTask < ActiveRecord::Base
     has_many :dependers, through: :depended_on_by
 
     attribute :depon
+    attribute :depon_topics
     def depon
 
       deps = []
       dependees.each{|d| deps.push(d.topic_id)}
       return deps
+    end
+    def depon_topics
+      Topic.find(depon)
     end
 end

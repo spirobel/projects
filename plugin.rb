@@ -20,6 +20,9 @@ after_initialize do
   add_to_serializer :topic_list_item, :projects_task do
     object.projects_task
   end
+  add_to_serializer :post, :projects_task do
+    object.projects_task
+  end
   PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
   add_permitted_post_create_param({:projects_task_attributes => [:duration]},:hash)
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
@@ -63,8 +66,11 @@ Rails.logger.level = 0
     has_one :projects_task, dependent: :destroy, :inverse_of => :topic
 
     after_save do
-      puts 'huhu'
+      puts 'topic saved'
       #byebug
     end
+  end
+  Post.class_eval do
+    has_one :projects_task, through: :topic
   end
 end

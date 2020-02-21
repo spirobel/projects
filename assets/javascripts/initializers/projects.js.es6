@@ -6,6 +6,9 @@ import { debounce } from "@ember/runloop";
 import Topic from 'discourse/models/topic';
 import TopicList from 'discourse/models/topic-list';
 import { ajax } from "discourse/lib/ajax";
+import { replaceEmoji } from "discourse/widgets/emoji";
+import { iconNode } from "discourse-common/lib/icon-library";
+import { h } from "virtual-dom";
 function initializeComposer(api) {
   TopicList.reopenClass({
       topics_array(topic_ids) {
@@ -20,6 +23,64 @@ function initializeComposer(api) {
   });
 
   //READ
+  api.includePostAttributes('projects_task');
+  api.decorateWidget('post-menu:before', function(helper){
+    //functions to display the links below topic
+    const linkHtml =function(link) {
+       const linkBody = replaceEmoji(link.title);
+       console.log(link)
+       return h(
+         "li",
+         h(
+           "a.track-link",
+           {
+             className: "inbound",
+             attributes: { href: link.url }
+           },
+           [iconNode("link"), linkBody]
+         )
+       );
+     }
+     //START of decoration
+     if (!helper.attrs.projects_task.depon_topics || helper.attrs.projects_task.depon_topics.length === 0) {
+         // shortcut all work
+         return;
+       }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const store = Discourse.__container__.lookup("service:store");
+
+    console.log(helper.attrs.projects_task.depon_topics)
+    const topicMap = [];
+    helper.attrs.projects_task.depon_topics.forEach(t => (topicMap.push(store.createRecord("topic", t))));
+    console.log(topicMap)
+
+
+
+    // show all links
+    const result = [];
+      topicMap.forEach(l => result.push(linkHtml(l)));
+    if (result.length) {
+      return h('div',[h('span',{ className:"test"},'depends on these tasks to finish first:'),h("ul.post-links", result)]);
+    }
+
+
+
+
+  return helper.h('p', 'Hello');
+});
   Topic.reopen({
   @computed('projects_task.begin')
   projectsTaskBeginPretty(begin) {
