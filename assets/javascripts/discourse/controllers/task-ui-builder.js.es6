@@ -8,6 +8,11 @@ export default Ember.Controller.extend({
 
 
   actions: {
+    resetDatetime(){
+      this.updateButtonLabel(false);
+      this.submit("");
+      this.send("closeModal");
+    },
     closeDatetime() {
       let dt = moment(
         this.date + " " + this.time,

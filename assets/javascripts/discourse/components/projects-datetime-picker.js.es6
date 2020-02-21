@@ -19,7 +19,10 @@ export default Ember.Component.extend({
 
   actions: {
     updateButtonLabel(dt){
+      if(!dt){this.set("buttonLabel", "set "+this.datetimeLabel+" date!")}
+      else{
       this.set("buttonLabel",this.datetimeLabel+": " + dt.format("D.M.Y, h:mm a"));
+    }
     }
 }
 });

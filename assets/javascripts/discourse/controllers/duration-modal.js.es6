@@ -8,6 +8,11 @@ export default Ember.Controller.extend({
 
 
   actions: {
+    resetDuration(){
+      this.updateButtonLabel(false);
+      this.submit("");
+      this.send("closeModal");
+    },
     closeDuration() {
       //(omitting "P" and lower case also possible)
      let argstri = "" + this.get('durationString')

@@ -19,7 +19,10 @@ export default Ember.Component.extend({
 
   actions: {
     updateButtonLabel(dt){
+      if(!dt){this.set("buttonLabel", "set "+this.Label+"!")}
+      else{
       this.set("buttonLabel",this.Label+": " +  dt);
+    }
     }
 }
 });
