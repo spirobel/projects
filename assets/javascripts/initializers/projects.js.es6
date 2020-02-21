@@ -28,7 +28,6 @@ function initializeComposer(api) {
     //functions to display the links below topic
     const linkHtml =function(link) {
        const linkBody = replaceEmoji(link.title);
-       console.log(link)
        return h(
          "li",
          h(
@@ -41,45 +40,38 @@ function initializeComposer(api) {
          )
        );
      }
+     const linkList = function(topics){
+    //   if ((!helper.attrs.projects_task.depon_topics || helper.attrs.projects_task.depon_topics.length === 0)&&
+    //       (!helper.attrs.projects_task.depby_topics || helper.attrs.projects_task.depby_topics.length === 0) ) {
+      if(!topics || topics.length ===0){
+           // shortcut all work
+           return;
+         }
+         const store = Discourse.__container__.lookup("service:store");
+         const topicsMap = [];
+         topics.forEach(t => (topicsMap.push(store.createRecord("topic", t))));
+         const result = [];
+         topicsMap.forEach(l => result.push(linkHtml(l)));
+         return result;
+     }
      //START of decoration
-     if (!helper.attrs.projects_task.depon_topics || helper.attrs.projects_task.depon_topics.length === 0) {
-         // shortcut all work
-         return;
-       }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const store = Discourse.__container__.lookup("service:store");
-
-    console.log(helper.attrs.projects_task.depon_topics)
-    const topicMap = [];
-    helper.attrs.projects_task.depon_topics.forEach(t => (topicMap.push(store.createRecord("topic", t))));
-    console.log(topicMap)
-
-
-
-    // show all links
-    const result = [];
-      topicMap.forEach(l => result.push(linkHtml(l)));
-    if (result.length) {
-      return h('div',[h('span',{ className:"test"},'depends on these tasks to finish first:'),h("ul.post-links", result)]);
+     const endresult = [];
+     const depons = linkList(helper.attrs.projects_task.depon_topics);
+     if (depons){
+      endresult.push(h('span',{ className:"test"},'this task depends on these tasks to finish first:'));
+      endresult.push(h("ul.post-links", depons));
+    }
+    const depbys = linkList(helper.attrs.projects_task.depby_topics);
+    if (depbys){
+     endresult.push(h('span',{ className:"test"},'these tasks depend on this task to finish first:'));
+     endresult.push(h("ul.post-links", depbys));
+   }
+    if (endresult.length) {
+      return h('div',endresult);
     }
 
 
 
-
-  return helper.h('p', 'Hello');
 });
   Topic.reopen({
   @computed('projects_task.begin')
@@ -104,6 +96,8 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task_end');
   Composer.serializeToDraft('projects_task_locked');
   Composer.serializeToDraft('projects_task_modified');
+  Composer.serializeToDraft('projects_task_depby');
+  Composer.serializeToDraft('projects_task_depon');
 
 
   Composer.reopen({

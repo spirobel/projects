@@ -41,14 +41,8 @@ module Project
 #todo handle circular dep
 
         @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
+        @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
 
-       if params[:note][:depby]
-         params[:note][:depby].each { |depby|
-           depby_task = ProjectsTask.where(["topic_id = ?",depby]).first
-
-             @projects_task.depended_on_by.create(depender_id: depby_task)
-          }
-      end
       end
       def handle_locked
         @projects_task.assign_attributes(task_params)

@@ -8,13 +8,22 @@ class ProjectsTask < ActiveRecord::Base
 
     attribute :depon
     attribute :depon_topics
+    attribute :depby
+    attribute :depby_topics
     def depon
-
       deps = []
       dependees.each{|d| deps.push(d.topic_id)}
       return deps
     end
     def depon_topics
       Topic.find(depon)
+    end
+    def depby
+      deps = []
+      dependers.each{|d| deps.push(d.topic_id)}
+      return deps
+    end
+    def depby_topics
+      Topic.find(depby)
     end
 end

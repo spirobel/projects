@@ -28,8 +28,6 @@ export default Component.extend({
     const selectedTopics = this.selectedTopics
     //eat topics as ids
     TopicList.topics_array(this.selectedTopicsID).then(results => selectedTopics.pushObjects(results))
-    console.log(selectedTopics)
-    console.log(this.selectedTopicsID)
     //TODO set category
     this.set('additionalFilters','#Lounge')
   },

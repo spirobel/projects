@@ -13,7 +13,6 @@ export default {
       ],
     });
     if(this.model.topic && this.model.topic.projects_task){
-      console.log(this.model.projects_task_depon)
 
       //SET ON MODEL
       this.model.setProperties({
@@ -24,7 +23,7 @@ export default {
         projects_task_depon: this.model.topic.projects_task.depon,
         projects_task_depby: this.model.topic.projects_task.depby
       });
-      console.log(this.model.projects_task_depon)
+
 
       //SET ON COMPONTENT
       this.setProperties({
@@ -92,10 +91,14 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
       this.set("model.projects_task_modified","duration")
    },
    dependencies(depon, depby){
-     console.log(this.model.projects_task_depon)
-     this.set("model.projects_task_depon",depon)
-     console.log(this.model.projects_task_depon)
+     console.log("NEW SUBMIT BEGIN:")
+     console.log("depon:")
+     console.log(depon)
+     console.log("depby:")
+     console.log(depby)
+     console.log("NEW SUBMIT END:")
 
+     this.set("model.projects_task_depon",depon)
      this.set("model.projects_task_depby",depby)
    },
 
