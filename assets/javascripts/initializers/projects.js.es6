@@ -113,7 +113,8 @@ function initializeComposer(api) {
              locked: this.projects_task_locked,
              modified: this.projects_task_modified,
              depon: this.projects_task_depon,
-             depby: this.projects_task_depby
+             depby: this.projects_task_depby,
+             dry: false
            });
 
          noteRecord.save()  .then(function(result) {

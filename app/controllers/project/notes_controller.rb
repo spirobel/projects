@@ -13,7 +13,7 @@ module Project
       }
        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
        #UPDATE
-       puts "huhunach first"
+      ProjectsTask.transaction do
        if @projects_task
         # @projects_task.update(task_params)
         handle_locked()
@@ -31,6 +31,9 @@ module Project
             puts "creation",note_id, note
             render json: { note: note }
         end
+        raise ActiveRecord::Rollback if params[:note][:dry] == true
+
+      end
 #TODOrename params to fit model
 #find topic find task
 #task exists > update; else > create task
@@ -38,7 +41,12 @@ module Project
     private
       def handle_deps
 #todo handle self dep
+#WARN if :
 #todo handle circular dep
+#todo check if dependees finish before task begin date)
+#todo check if dependers start after task end date)
+#do dry runs and feed notes data back into composer
+
 
         @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
         @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])

@@ -90,6 +90,36 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
    begin(begin) {
       this.set("model.projects_task_begin",begin);
       this.set("model.projects_task_modified","begin")
+      const noteRecord = this.store.createRecord('note', {
+        id: this.model.topic.id,
+        begin: this.projects_task_begin,
+        end: this.projects_task_end,
+        duration: this.projects_task_duration,
+        locked: this.projects_task_locked,
+        modified: this.projects_task_modified,
+        depon: this.projects_task_depon,
+        depby: this.projects_task_depby,
+        dry: true
+      });
+
+    noteRecord.save()  .then(function(result) {
+      //attach the new object to the topic here
+
+
+           const body = I18n.t("composer.duplicate_link", {
+domain: "info.domain",
+username: "info.username",
+post_url: "topic.urlForPostNumber(info.post_number)",
+ago: "shortDate(info.posted_at)"
+});
+result.target.appEvents.trigger("composer-messages:create", {
+extraClass: "custom-body",
+templateName: "custom-body",
+body
+});
+           console.log(result)
+         })
+         .catch(console.error);
    },
    end(end) {
       this.set("model.projects_task_end",end);
