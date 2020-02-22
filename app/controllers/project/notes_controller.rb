@@ -25,7 +25,7 @@ module Project
     end
     private
       def return_note
-        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
+        #@projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
         #todo feed modifed and derived from back into projects_task this means delete the above statement
         note = {
           'id' => @projects_task.topic_id,
@@ -39,6 +39,7 @@ module Project
         return note
       end
       def handle_deps(dry)
+        #byebug
 #todo handle self dep
 #WARN if :
 #todo handle circular dep
@@ -48,7 +49,7 @@ module Project
         ActiveRecord::Base.transaction(requires_new: true) do
           @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
           @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
-          raise ActiveRecord::Rollback if dry
+          raise ActiveRecord::Rollback if dry == true
         end
       end
       def handle_locked
