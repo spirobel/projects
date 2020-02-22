@@ -9,8 +9,7 @@ export default {
       dropdowncontent:[
         "duration",
         "begin",
-        "end",
-        "totally"
+        "end"
       ],
     });
     if(this.model.topic && this.model.topic.projects_task){
@@ -49,10 +48,6 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
    this.set('begindisabled', false)
    this.set('durationdisabled', false)
    this.set('enddisabled', true)
- } else if (this.model.projects_task_locked === "totally") {
-   this.set('begindisabled', true)
-   this.set('durationdisabled', true)
-   this.set('enddisabled', true)
  } else {
    this.set('begindisabled', false)
    this.set('durationdisabled', true)
@@ -72,10 +67,6 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
        this.set('begindisabled', false)
        this.set('durationdisabled', false)
        this.set('enddisabled', true)
-     } else if (this.model.projects_task_locked === "totally") {
-       this.set('begindisabled', true)
-       this.set('durationdisabled', true)
-       this.set('enddisabled', true)
      } else {
        this.set('begindisabled', false)
        this.set('durationdisabled', true)
@@ -92,13 +83,13 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
       this.set("model.projects_task_modified","begin")
       const noteRecord = this.store.createRecord('note', {
         id: this.model.topic.id,
-        begin: this.projects_task_begin,
-        end: this.projects_task_end,
-        duration: this.projects_task_duration,
-        locked: this.projects_task_locked,
-        modified: this.projects_task_modified,
-        depon: this.projects_task_depon,
-        depby: this.projects_task_depby,
+        begin: this.model.projects_task_begin,
+        end: this.model.projects_task_end,
+        duration: this.model.projects_task_duration,
+        locked: this.model.projects_task_locked,
+        modified: this.model.projects_task_modified,
+        depon: this.model.projects_task_depon,
+        depby: this.model.projects_task_depby,
         dry: true
       });
 
