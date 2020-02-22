@@ -1,56 +1,55 @@
 module Project
   class NotesController < ApplicationController
     def update
-      note_id = params[:topic_id]
-      note = {
-        'id' => note_id,
-        'begin' => params[:note][:begin],
-        'end' => params[:note][:end],
-        'duration' => params[:note][:duration],
-        'locked' => params[:note][:locked],
-        'depon' => params[:note][:depon],
-        'depby' => params[:note][:depby]
-      }
        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
        #UPDATE
-      ProjectsTask.transaction do
-       if @projects_task
-        # @projects_task.update(task_params)
-        handle_locked()
-        handle_deps()
-        puts @projects_task.inspect
-         puts "update",note_id, note
-
-         render json: { note: note }
+       ActiveRecord::Base.transaction do
+        if @projects_task
+          # @projects_task.update(task_params)
+          handle_locked()
+          handle_deps(params[:note][:dry])
         else
-
           @topic = Topic.find(params[:topic_id])
           @projects_task = @topic.create_projects_task(task_params)
           handle_locked()
-          handle_deps()
-            puts "creation",note_id, note
-            render json: { note: note }
+          handle_deps(params[:note][:dry])
         end
         raise ActiveRecord::Rollback if params[:note][:dry] == true
+        end
+      render json: { note: return_note }
 
-      end
+
 #TODOrename params to fit model
 #find topic find task
 #task exists > update; else > create task
     end
     private
-      def handle_deps
+      def return_note
+        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
+        #todo feed modifed and derived from back into projects_task this means delete the above statement
+        note = {
+          'id' => @projects_task.topic_id,
+          'begin' => @projects_task.begin,
+          'end' => @projects_task.end,
+          'duration' => @projects_task.duration,
+          'locked' => @projects_task.locked,
+          'depon' => @projects_task.depon,
+          'depby' => @projects_task.depby
+        }
+        return note
+      end
+      def handle_deps(dry)
 #todo handle self dep
 #WARN if :
 #todo handle circular dep
 #todo check if dependees finish before task begin date)
 #todo check if dependers start after task end date)
 #do dry runs and feed notes data back into composer
-
-
-        @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
-        @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
-
+        ActiveRecord::Base.transaction(requires_new: true) do
+          @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
+          @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
+          raise ActiveRecord::Rollback if dry
+        end
       end
       def handle_locked
         @projects_task.assign_attributes(task_params)

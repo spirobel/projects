@@ -106,18 +106,13 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
       //attach the new object to the topic here
 
 
-           const body = I18n.t("composer.duplicate_link", {
-domain: "info.domain",
-username: "info.username",
-post_url: "topic.urlForPostNumber(info.post_number)",
-ago: "shortDate(info.posted_at)"
-});
+           const body = "this is a test dry run"
 result.target.appEvents.trigger("composer-messages:create", {
 extraClass: "custom-body",
 templateName: "custom-body",
 body
 });
-           console.log(result)
+           console.log(result.payload)
          })
          .catch(console.error);
    },
