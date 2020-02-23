@@ -14,7 +14,8 @@ module Project
           handle_locked()
           handle_deps(params[:note][:dry])
         end
-        raise ActiveRecord::Rollback if params[:note][:dry] == true
+        puts params[:note][:dry].inspect
+        raise ActiveRecord::Rollback if params[:note][:dry] == "true"
         end
       render json: { note: return_note }
 
@@ -49,7 +50,7 @@ module Project
         ActiveRecord::Base.transaction(requires_new: true) do
           @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
           @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
-          raise ActiveRecord::Rollback if dry == true
+          raise ActiveRecord::Rollback if dry == "true"
         end
       end
       def handle_locked
