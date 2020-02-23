@@ -21,7 +21,8 @@ export default {
         projects_task_duration:this.model.topic.projects_task.duration,
         projects_task_locked: this.model.topic.projects_task.locked,
         projects_task_depon: this.model.topic.projects_task.depon,
-        projects_task_depby: this.model.topic.projects_task.depby
+        projects_task_depby: this.model.topic.projects_task.depby,
+        projects_task_disallow: this.model.topic.projects_task.disallow
       });
 
 
@@ -53,6 +54,10 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
    this.set('durationdisabled', true)
    this.set('enddisabled', false)
  }
+ this.set('disallow_classes', "btn-primary")
+if (this.model.projects_task_disallow){
+  this.set('disallow_classes', "locked-button btn-primary")
+}
 },
   actions: {
    lockedChange(name){
@@ -90,7 +95,8 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
         modified: this.model.projects_task_modified,
         depon: this.model.projects_task_depon,
         depby: this.model.projects_task_depby,
-        dry: true
+        dry: true,
+        disallow: this.projects_task_disallow
       });
 
     noteRecord.save()  .then(function(result) {
@@ -126,6 +132,17 @@ body
      this.set("model.projects_task_depon",depon)
      this.set("model.projects_task_depby",depby)
    },
+   disallow(){
+    if (this.model.projects_task_disallow){
+      this.set('disallow_classes', "btn-primary")
+      this.set('model.projects_task_disallow', false)
+
+    }else{
+      this.set('disallow_classes', "locked-button btn-primary")
+      this.set('model.projects_task_disallow', true)
+
+    }
+   }
 
 
  }

@@ -8,5 +8,11 @@
   <div>
   {{projects-dependencies-picker submit=(action "dependencies") deponTopics=model.projects_task_depon depbyTopics=model.projects_task_depby}}
 </div>
+<div>
+  {{d-button
+    class=disallow_classes
+    action=(action "disallow")
+    icon="lock"}}
+</div>
 </div>
 {{/if}}

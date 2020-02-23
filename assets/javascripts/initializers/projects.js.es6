@@ -101,6 +101,8 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task_modified');
   Composer.serializeToDraft('projects_task_depby');
   Composer.serializeToDraft('projects_task_depon');
+  Composer.serializeToDraft('projects_task_disallow');
+
 
 
   Composer.reopen({
@@ -114,7 +116,8 @@ function initializeComposer(api) {
              modified: this.projects_task_modified,
              depon: this.projects_task_depon,
              depby: this.projects_task_depby,
-             dry: false
+             dry: false,
+             disallow: this.projects_task_disallow
            });
 
          noteRecord.save()  .then(function(result) {

@@ -96,7 +96,7 @@ module Project
         @projects_task.save
       end
       def task_params
-        params.require(:note).permit( :begin,:end,:duration,:locked)
+        params.require(:note).permit( :begin,:end,:duration,:locked,:disallow)
       end
   end
 end
