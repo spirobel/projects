@@ -131,6 +131,7 @@ body
 
      this.set("model.projects_task_depon",depon)
      this.set("model.projects_task_depby",depby)
+     this.set("model.projects_task_modified","dependencies")
    },
    disallow(){
     if (this.model.projects_task_disallow){

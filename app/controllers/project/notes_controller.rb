@@ -6,7 +6,8 @@ module Project
        ActiveRecord::Base.transaction do
         if @projects_task
           # @projects_task.update(task_params)
-          handle_locked()
+          #handle_locked()
+          handle_modified()
           handle_deps(params[:note][:dry])
         else
           @topic = Topic.find(params[:topic_id])
@@ -14,7 +15,6 @@ module Project
           handle_locked()
           handle_deps(params[:note][:dry])
         end
-        puts params[:note][:dry].inspect
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"
         end
       render json: { note: return_note }
@@ -52,6 +52,30 @@ module Project
           @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
           raise ActiveRecord::Rollback if dry == "true"
         end
+      end
+      def handle_modified
+        @projects_task.assign_attributes(task_params)
+        messages = []
+         if params[:note][:modified] == 'begin'
+           #TODO deduplicate errors
+           messages += @projects_task.set_end(params[:note][:end],false)
+           messages += @projects_task.set_duration(params[:note][:duration])
+           messages += @projects_task.set_begin(params[:note][:begin],false)
+         elsif  params[:note][:modified] == 'duration'
+           messages += @projects_task.set_end(params[:note][:end],false)
+           messages += @projects_task.set_begin(params[:note][:begin],false)
+           messages += @projects_task.set_duration(params[:note][:duration])
+         elsif  params[:note][:modified] == 'end'
+           messages += @projects_task.set_duration(params[:note][:duration])
+           messages += @projects_task.set_begin(params[:note][:begin],false)
+           messages += @projects_task.set_end(params[:note][:end],false)
+         else #dependencies
+           messages += @projects_task.set_end(params[:note][:end],false)
+           messages += @projects_task.set_duration(params[:note][:duration])
+           messages += @projects_task.set_begin(params[:note][:begin],false)
+         end
+         puts messages
+         @projects_task.save
       end
       def handle_locked
         @projects_task.assign_attributes(task_params)
