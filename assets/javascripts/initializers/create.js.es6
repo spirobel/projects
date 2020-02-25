@@ -43,8 +43,8 @@ function initializeComposer(api) {
 //          this.appEvents.trigger("topic:created", createdPost, composer);
   api.onAppEvent('topic:created', function(createdPost,composer){
        console.log('a topic was created');
-       this.projects_task.set('id',createdPost.topic_id);
-       this.projects_task.set('dry',false);
+       this.set('projects_task.id',createdPost.topic_id);
+       this.set('projects_task.dry',false);
        composer.save_projects_task();
      });
 //UPDATE
@@ -54,8 +54,8 @@ function initializeComposer(api) {
  api.composerBeforeSave(function() {
    console.log("Before saving, do something!");
    if (this.action == 'edit') {
-     this.projects_task.set('id',this.topic.id);
-     this.projects_task.set('dry',false);
+     this.set('projects_task.id',this.topic.id);
+     this.set('projects_task.dry',false);
 
      this.save_projects_task();
 //  return Promise.reject(new Error("asdasd"));
