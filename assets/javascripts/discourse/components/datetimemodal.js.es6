@@ -4,7 +4,7 @@ export default Ember.Component.extend({
   @computed('disabled')
   classes(disabled) {
     if(disabled){
-    return "locked-button btn-primary";
+    return "locked-btn btn-primary";
   }
   else{
     return "btn-primary";
