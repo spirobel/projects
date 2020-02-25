@@ -94,11 +94,7 @@ function initializeComposer(api) {
   }
 });
   //DRAFT
-  //these two calls have to be used together otherwise it does not work
-  // maybe we also need Composer.serializeToTopic('projects_task', 'topic.projects_task');
-      Composer.serializeOnCreate('projects_task');
-Composer.serializeToDraft('projects_task');
-Composer.serializeToTopic('projects_task', 'topic.projects_task');
+  Composer.serializeToDraft('projects_task');
 
   Composer.reopen({
     manageLocked(){

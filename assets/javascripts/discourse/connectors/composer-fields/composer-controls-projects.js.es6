@@ -13,7 +13,9 @@ export default {
         "end"
       ],
     });
-
+if(!this.model.projects_task){
+  this.model.set('projects_task',this.model.topic.projects_task)
+}
     //SET ON MODEL  when creating    this.model.setProperties({projects_task_locked: 'duration'  });
  this.model.manageLocked();
 
