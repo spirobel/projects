@@ -14,7 +14,8 @@ export default {
       ],
     });
 if(!this.model.projects_task){
-  this.model.set('projects_task',this.model.topic.projects_task)
+  const draft_projects_task = Object.assign({}, this.model.topic.projects_task);
+  this.model.set('projects_task',draft_projects_task)
 }
     //SET ON MODEL  when creating    this.model.setProperties({projects_task_locked: 'duration'  });
  this.model.manageLocked();
