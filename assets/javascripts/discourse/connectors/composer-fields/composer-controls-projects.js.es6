@@ -54,9 +54,9 @@ if(!this.model.projects_task_depby){this.model.set("projects_task_depby",[])}
    this.set('durationdisabled', true)
    this.set('enddisabled', false)
  }
- this.set('disallow_classes', "btn-primary")
+ this.set('disallow_classes', "small-btn btn-primary")
 if (this.model.projects_task_disallow){
-  this.set('disallow_classes', "locked-button btn-primary")
+  this.set('disallow_classes', "locked-btn small-btn btn-primary")
 }
 },
   actions: {
@@ -135,11 +135,11 @@ body
    },
    disallow(){
     if (this.model.projects_task_disallow){
-      this.set('disallow_classes', "btn-primary")
+      this.set('disallow_classes', "small-btn btn-primary")
       this.set('model.projects_task_disallow', false)
 
     }else{
-      this.set('disallow_classes', "locked-button btn-primary")
+      this.set('disallow_classes', "locked-btn small-btn btn-primary")
       this.set('model.projects_task_disallow', true)
 
     }

@@ -1,2 +1,41 @@
-.projects {
+.add-task-button-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  > div {
+    margin: -4px 5px 8px 0px;
+    flex-grow: 1;
+    >div{
+      width:100%;
+    }
+  }
+  .btn{
+  //  margin: 4px 6px 4px 0px;
+  width: 100%;
+}
+  .max-btn{
+    max-width: 100px;
+  }
+  .small-btn{
+  width: unset;
+  }
+  .locked-btn{
+    opacity: 0.4;
+  }
+}
+
+.dependencies-modal {
+  .modal-body {
+    position: relative;
+    height: 400px;
+    width: 700px;
+  }
+  &.small .modal-body {
+    height: 310px;
+  }
+
+
+}
+.test{
+  font-weight: bold;
 }

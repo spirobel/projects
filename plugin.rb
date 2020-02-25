@@ -5,8 +5,8 @@
 # url: https://github.com/spirobel
 
 register_asset "stylesheets/common/projects.scss"
-register_asset "stylesheets/desktop/projects.scss"
-register_asset "stylesheets/mobile/projects.scss"
+register_asset "stylesheets/desktop/projects.scss", :desktop
+register_asset "stylesheets/mobile/projects.scss", :mobile
 
 enabled_site_setting :projects_enabled
 

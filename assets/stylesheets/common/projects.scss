@@ -3,17 +3,23 @@
   flex-wrap: wrap;
   width: 50%;
   > div {
-    >div{
-      display: flex;
-    }
+    margin: -4px 5px 8px 0px;
     flex-grow: 1;
+    >div{
+      width:100%;
+    }
   }
   .btn{
-    margin: 4px 6px 4px 0px;
-    flex-grow: 1;
-
+  //  margin: 4px 6px 4px 0px;
+  width: 100%;
+}
+  .max-btn{
+    max-width: 100px;
   }
-  .locked-button{
+  .small-btn{
+  width: unset;
+  }
+  .locked-btn{
     opacity: 0.4;
   }
 }
