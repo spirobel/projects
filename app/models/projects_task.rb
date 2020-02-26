@@ -63,18 +63,18 @@ class ProjectsTask < ActiveRecord::Base
       end
       if duration && !self.end
         #handle self.dependers
-        self.end = new_begin + duration
+        self.end = self.begin + duration
         self.sync_dependers
       elsif !duration && self.end
-        self.duration = self.end - new_begin
+        self.duration = self.end - self.begin
         return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
       elsif duration && self.end
         return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "begin"
         if locked == "end"
-          self.duration = self.end - new_begin
+          self.duration = self.end - self.begin
           return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
         else #duration locked
-          self.end = new_begin + duration
+          self.end = self.begin + duration
           self.sync_dependers
         end
       end
@@ -94,18 +94,18 @@ class ProjectsTask < ActiveRecord::Base
         return messages
       end
       if duration && !self.begin
-        self.begin = new_end - duration
+        self.begin = self.end - duration
         self.sync_dependees
       elsif !duration && self.begin
-        self.duration = new_end - self.begin
+        self.duration = self.end - self.begin
         return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
       elsif duration && self.begin
         return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "end"
         if locked == "begin"
-          self.duration = new_end - self.begin
+          self.duration = self.end - self.begin
           return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
         else #duration locked
-          self.begin = new_end - duration
+          self.begin = self.end - duration
           self.sync_dependees
         end
       end
@@ -124,15 +124,15 @@ class ProjectsTask < ActiveRecord::Base
         return messages
       end
       if self.begin && !self.end
-        messages += self.set_end(self.begin + new_duration, false)
+        messages += self.set_end(self.begin + self.duration, false)
       elsif !self.begin && self.end
-        messages += self.set_begin(self.end - new_duration, false)
+        messages += self.set_begin(self.end - self.duration, false)
       elsif self.begin && self.end
         return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "duration"
         if locked == "begin"
-          messages += self.set_end(self.begin + new_duration, false)
+          messages += self.set_end(self.begin + self.duration, false)
         else #end locked
-          messages += self.set_begin(self.end - new_duration, false)
+          messages += self.set_begin(self.end - self.duration, false)
         end
       end
       self.save

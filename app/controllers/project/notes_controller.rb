@@ -36,7 +36,8 @@ module Project
           'duration' => @projects_task.duration,
           'locked' => @projects_task.locked,
           'depon' => @projects_task.depon,
-          'depby' => @projects_task.depby
+          'depby' => @projects_task.depby,
+          'messages' => @messages
         }
         return note
       end
@@ -76,7 +77,8 @@ module Project
            messages += @projects_task.set_duration(params[:note][:duration])
            messages += @projects_task.set_begin(params[:note][:begin],false)
          end
-         puts messages
+         messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
+         @messages = messages
       end
       def task_params
         params.require(:note).permit( :begin,:end,:duration,:locked,:disallow)
