@@ -15,12 +15,15 @@ PLUGIN_NAME ||= "Project".freeze
 load File.expand_path('../lib/projects/engine.rb', __FILE__)
 after_initialize do
   add_to_serializer :topic_view, :projects_task do
+    object.topic.projects_task.id = self.topic.id
     object.topic.projects_task
   end
   add_to_serializer :topic_list_item, :projects_task do
+    object.projects_task.id = self.topic.id if object.projects_task
     object.projects_task
   end
   add_to_serializer :post, :projects_task do
+    object.projects_task.id = self.topic_id
     object.projects_task
   end
   PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
