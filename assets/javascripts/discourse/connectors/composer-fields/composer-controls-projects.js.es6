@@ -15,6 +15,7 @@ export default {
     });
 if(!this.model.projects_task){
   const draft_projects_task = Object.assign({}, this.model.topic.projects_task);
+  draft_projects_task.id = this.model.topic.id;
   this.model.set('projects_task',draft_projects_task)
 }
     //SET ON MODEL  when creating    this.model.setProperties({projects_task_locked: 'duration'  });
@@ -31,22 +32,26 @@ if (this.model.projects_task.disallow){
      this.model.manageLocked();
    },
    //TODO do dry runs in the backend and show error messages
-   //TODO dont actually disable buttons, just turn locked button grey
+   //TODO dont actually disable buttons, just turn locked button grey except when forbidden
    //TODO fix duration fill in with display function and also pretty duration
    //TODO fix titles
    begin(begin) {
      this.model.set('projects_task.begin', begin );
      this.model.set('projects_task.modifed', "begin" );
      this.model.set('projects_task.dry', true );
-      this.model.save_projects_task()
+     this.model.save_projects_task()
    },
    end(end) {
       this.set("model.projects_task.end",end);
       this.set("model.projects_task.modified","end")
+      this.model.set('projects_task.dry', true );
+      this.model.save_projects_task()
    },
    duration(duration) {
       this.set("model.projects_task.duration",duration);
       this.set("model.projects_task.modified","duration")
+      this.model.set('projects_task.dry', true );
+      this.model.save_projects_task()
    },
    dependencies(depon, depby){
      this.set("model.projects_task.depon",depon)
