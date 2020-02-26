@@ -1,19 +1,20 @@
 module Project
   class NotesController < ApplicationController
     def update
+      puts params[:topic_id]
        @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
        #UPDATE
        ActiveRecord::Base.transaction do
         if @projects_task
           # @projects_task.update(task_params)
           #handle_locked()
-          handle_modified()
           handle_deps(params[:note][:dry])
+          handle_modified()
         else
           @topic = Topic.find(params[:topic_id])
           @projects_task = @topic.create_projects_task(task_params)
-          handle_modified()
           handle_deps(params[:note][:dry])
+          handle_modified()
         end
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"
         end
@@ -55,6 +56,8 @@ module Project
       end
       def handle_modified
         messages = []
+        @projects_task.assign_attributes(task_params)
+        @projects_task.save
          if params[:note][:modified] == 'begin'
            #TODO deduplicate errors
            messages += @projects_task.set_end(params[:note][:end],false)
