@@ -31,13 +31,12 @@ if (this.model.projects_task.disallow){
      this.model.set('projects_task.locked', name );
      this.model.manageLocked();
    },
-   //TODO do dry runs in the backend and show error messages
    //TODO dont actually disable buttons, just turn locked button grey except when forbidden
    //TODO fix duration fill in with display function and also pretty duration
    //TODO fix titles
    begin(begin) {
      this.model.set('projects_task.begin', begin );
-     this.model.set('projects_task.modifed', "begin" );
+     this.model.set('projects_task.modified', "begin" );
      this.model.set('projects_task.dry', true );
      this.model.save_projects_task()
    },
