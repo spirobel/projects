@@ -78,7 +78,16 @@ module Project
            messages += @projects_task.set_begin(params[:note][:begin],false)
          end
          messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
-         @messages = messages
+         @messages = {}
+         messages.each{ |m|
+           unless m[:url].nil?
+             @messages[m[:url]] = [] if @messages[m[:url]].nil?
+             @messages[m[:url]] << m
+           end
+         }
+         @messages.each{|k,t|
+           t.uniq! {|m| m[:message]}
+         }
       end
       def task_params
         params.require(:note).permit( :begin,:end,:duration,:locked,:disallow)

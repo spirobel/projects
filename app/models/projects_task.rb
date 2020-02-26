@@ -140,7 +140,8 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def error_duration_bz
-      return [{message_type:"error", message: I18n.t("pt_errors.duration_below_zero",topic_id: topic_id)}]
+      t = Topic.find(topic_id)
+      return [{url: t.url, title: t.title, message_type:"error", message: I18n.t("pt_errors.duration_below_zero",topic_id: topic_id)}]
     end
 end
 #todo create change messages if change really happend
