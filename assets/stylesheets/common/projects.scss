@@ -39,3 +39,13 @@
 .test{
   font-weight: bold;
 }
+.pt_messages{
+   list-style-type: square;
+  .error{
+    margin-left: 5px;
+    color: red;
+  }
+  li::before {
+  content: "• ";
+}
+}

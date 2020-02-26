@@ -26,7 +26,17 @@ function initializeComposer(api) {
            const noteRecord = this.store.createRecord('note', this.projects_task);
            noteRecord.save().then(function(result) {
            //attach the new object to the topic here
-              const body = "this is a test dry run" + JSON.stringify(result.payload)
+           let mhtml = ""
+           const messis = result.payload.messages
+           Object.keys(messis).forEach((i) => {
+             mhtml += `<div><h4><a href=${messis[i][0].url}>${messis[i][0].title}</a></h4><ul class="pt_messages">`
+             messis[i].forEach((m, i) => {
+               mhtml+=`<li class="${m.message_type}">${m.message}</li>`
+             });
+             mhtml +="</ul></div>"
+           });
+
+              const body = mhtml + JSON.stringify(result.payload)
               result.target.appEvents.trigger("composer-messages:create", {
                 extraClass: "custom-body",
                 templateName: "custom-body",
