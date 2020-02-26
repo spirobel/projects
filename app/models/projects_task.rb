@@ -15,17 +15,44 @@ class ProjectsTask < ActiveRecord::Base
       dependees.each{|d| deps.push(d.topic_id)}
       return deps
     end
+
     def depon_topics
       Topic.find(depon)
     end
+
     def depby
       deps = []
       dependers.each{|d| deps.push(d.topic_id)}
       return deps
     end
+
     def depby_topics
       Topic.find(depby)
     end
+
+    def sync_dependers
+      messages = []
+      self.dependers.each{|d|
+          if(d.locked == "begin" || d.disallow) && !(d.begin > self.end)
+            return messages << {message_type:"error", message: "begin of the projects_task with topic_id:#{d.topic_id} is locked and #{d.begin} (too early) we are trying to change topic_id:#{self.topic_id} end to #{self.end}"}
+          end
+          messages += d.set_begin(self.end,true)
+         }
+      return messages
+    end
+    def sync_dependees
+      messages = []
+      self.dependees.each{|d|
+         puts"whe are here::#{d.topic_id} #{self.dependees.inspect} "
+          if(d.locked == "end" || d.disallow) && !(d.end < self.begin)
+            return messages << {message_type:"error", message: "end of the projects_task with topic_id:#{d.topic_id} is locked and #{d.end} (too late)we are trying to change topic_id:#{self.topic_id} begin to #{self.begin}"}
+          end
+          messages += d.set_end(self.begin,true)
+          puts"after call set_end in #{d.topic_id}"
+         }
+      return messages
+    end
+
     def set_begin(new_begin, autoset)
       messages = []
       return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked"}] if autoset&&locked == "begin"
@@ -35,27 +62,29 @@ class ProjectsTask < ActiveRecord::Base
         return messages
       end
       if duration && !self.end
+        #handle self.dependers
         self.end = new_begin + duration
+        self.sync_dependers
       elsif !duration && self.end
         self.duration = self.end - new_begin
+        return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
       elsif duration && self.end
         return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "begin"
         if locked == "end"
           self.duration = self.end - new_begin
+          return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
         else #duration locked
           self.end = new_begin + duration
+          self.sync_dependers
         end
       end
-      self.dependees.each{|d|
-         puts"whe are here::#{d.topic_id} #{self.dependers.inspect} "
-          if(d.locked == "end" || d.disallow) && !(d.end < self.begin)
-            return messages << {message_type:"error", message: "end of the projects_task with topic_id:#{d.topic_id} is locked and #{d.end} (too late)we are trying to change topic_id:#{self.topic_id} begin to #{self.begin}"}
-          end
-          messages += d.set_end(self.begin,true)
-         }
+      unless autoset
+        self.sync_dependees
+      end
       self.save
       return messages
     end
+
     def set_end(new_end, autoset)
       messages = []
       return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked"}] if autoset&&locked == "end"
@@ -66,25 +95,27 @@ class ProjectsTask < ActiveRecord::Base
       end
       if duration && !self.begin
         self.begin = new_end - duration
+        self.sync_dependees
       elsif !duration && self.begin
         self.duration = new_end - self.begin
+        return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
       elsif duration && self.begin
         return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "end"
         if locked == "begin"
           self.duration = new_end - self.begin
+          return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
         else #duration locked
           self.begin = new_end - duration
+          self.sync_dependees
         end
       end
-      self.dependers.each{|d|
-          if(d.locked == "begin" || d.disallow) && !(d.begin > self.end)
-            return messages << {message_type:"error", message: "begin of the projects_task with topic_id:#{d.topic_id} is locked and #{d.begin} (too early) we are trying to change topic_id:#{self.topic_id} end to #{self.end}"}
-          end
-          messages += d.set_begin(self.end,true)
-         }
+      unless autoset
+        self.sync_dependers
+      end
       self.save
       return messages
     end
+
     def set_duration(new_duration)
       messages = []
       self.duration = new_duration
