@@ -33,7 +33,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependers
       messages = []
       self.dependers.each{|d|
-          if(d.locked == "begin" || d.disallow) && !(d.begin > self.end)
+          if(d.locked == "begin" || d.disallow) && !(d.begin && d.begin > self.end)
             return messages << {message_type:"error", message: "begin of the projects_task with topic_id:#{d.topic_id} is locked and #{d.begin} (too early) we are trying to change topic_id:#{self.topic_id} end to #{self.end}"}
           end
           messages += d.set_begin(self.end,true)
@@ -43,8 +43,8 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependees
       messages = []
       self.dependees.each{|d|
-         puts"whe are here::#{d.topic_id} #{self.dependees.inspect} "
-          if(d.locked == "end" || d.disallow) && !(d.end < self.begin)
+         puts"whe are here::#{d.topic_id} #{self.dependees.inspect} begin: #{self.begin}"
+          if(d.locked == "end" || d.disallow) && !(d.end && d.end < self.begin)
             return messages << {message_type:"error", message: "end of the projects_task with topic_id:#{d.topic_id} is locked and #{d.end} (too late)we are trying to change topic_id:#{self.topic_id} begin to #{self.begin}"}
           end
           messages += d.set_end(self.begin,true)
