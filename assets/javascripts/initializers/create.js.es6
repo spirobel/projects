@@ -4,6 +4,7 @@ import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 function initializeComposer(api) {
   //DRAFT
+  //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
     manageLocked(){

@@ -1,3 +1,5 @@
 en:
   site_settings:
     projects_enabled: "Enable Projects plugin"
+  pt_errors:
+    duration_below_zero: "HUHUduration of the projects_task with topic_id:%{topic_id} below 0"

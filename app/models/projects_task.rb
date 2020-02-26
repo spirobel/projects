@@ -67,12 +67,12 @@ class ProjectsTask < ActiveRecord::Base
         self.sync_dependers
       elsif !duration && self.end
         self.duration = self.end - self.begin
-        return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
+        return self.error_duration_bz if duration < 0
       elsif duration && self.end
         return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "begin"
         if locked == "end"
           self.duration = self.end - self.begin
-          return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
+          return self.error_duration_bz if duration < 0
         else #duration locked
           self.end = self.begin + duration
           self.sync_dependers
@@ -98,12 +98,12 @@ class ProjectsTask < ActiveRecord::Base
         self.sync_dependees
       elsif !duration && self.begin
         self.duration = self.end - self.begin
-        return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
+        return self.error_duration_bz if duration < 0
       elsif duration && self.begin
         return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "end"
         if locked == "begin"
           self.duration = self.end - self.begin
-          return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} below 0"}] if duration < 0
+          return self.error_duration_bz if duration < 0
         else #duration locked
           self.begin = self.end - duration
           self.sync_dependees
@@ -137,6 +137,10 @@ class ProjectsTask < ActiveRecord::Base
       end
       self.save
       return messages
+    end
+
+    def error_duration_bz
+      return [{message_type:"error", message: I18n.t("pt_errors.duration_below_zero",topic_id: topic_id)}]
     end
 end
 #todo create change messages if change really happend
