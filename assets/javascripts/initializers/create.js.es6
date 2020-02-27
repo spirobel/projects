@@ -22,9 +22,9 @@ function initializeComposer(api) {
         this.set('enddisabled', false)
       }
   },
-    save_projects_task(){
+    async save_projects_task(){
            const noteRecord = this.store.createRecord('note', this.projects_task);
-           noteRecord.save().then(function(result) {
+           const   result = await noteRecord.save().then(function(result) {
            //attach the new object to the topic here
            let mhtml = ""
            const messis = result.payload.messages
@@ -42,8 +42,9 @@ function initializeComposer(api) {
                 templateName: "custom-body",
                 body
               });
-              console.log(result.payload)
+              return result.payload
           }).catch(console.error);
+          this.set("projects_task", result);
       },
 
 
