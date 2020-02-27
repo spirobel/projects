@@ -1,6 +1,3 @@
-{{duration-modal-opener submit=submit
-   updateButtonLabel=(action "updateButtonLabel")
-   buttonLabel=buttonLabel
-   duration=duration
-   disabled=disabled
- }}
+{{#d-button class=classes action=(action "openpicker") }}
+    <span>{{d-icon 'hourglass'}} {{buttonLabel}}</span>
+  {{/d-button}}

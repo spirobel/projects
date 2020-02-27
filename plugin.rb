@@ -7,7 +7,7 @@
 register_asset "stylesheets/common/projects.scss"
 register_asset "stylesheets/desktop/projects.scss", :desktop
 register_asset "stylesheets/mobile/projects.scss", :mobile
-
+register_svg_icon "hourglass" if respond_to?(:register_svg_icon)
 enabled_site_setting :projects_enabled
 
 PLUGIN_NAME ||= "Project".freeze
