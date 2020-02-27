@@ -1,5 +1,8 @@
 en:
   js:
+    begin: "select begin date and time"
+    end: "select end date and time"
+    duration: "select duration"
     projects:
     category:
       projects_setting_heading: "Projects"

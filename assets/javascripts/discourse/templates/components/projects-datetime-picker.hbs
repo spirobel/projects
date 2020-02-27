@@ -1,6 +1,3 @@
-{{datetimemodal submit=submit
-   updateButtonLabel=(action "updateButtonLabel")
-   buttonLabel=buttonLabel
-   datetime=datetime
-   disabled=disabled
- }}
+{{#d-button class=classes action=(action "openpicker") }}
+   <span>{{d-icon icon}} {{buttonLabel}}</span>
+ {{/d-button}}
