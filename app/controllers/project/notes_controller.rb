@@ -28,13 +28,14 @@ module Project
     private
       def return_note
         #@projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
-        #todo feed modifed and derived from back into projects_task this means delete the above statement
+        #todo feed modified and derived from back into projects_task this means delete the above statement
         note = {
           'id' => @projects_task.topic_id,
           'begin' => @projects_task.begin,
           'end' => @projects_task.end,
           'duration' => @projects_task.duration,
           'locked' => @projects_task.locked,
+          'modified' => params[:note][:modified],
           'depon' => @projects_task.depon,
           'depby' => @projects_task.depby,
           'messages' => @messages
