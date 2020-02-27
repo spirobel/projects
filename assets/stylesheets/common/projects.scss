@@ -45,6 +45,10 @@
     margin-left: 5px;
     color: red;
   }
+  .warning{
+    margin-left: 5px;
+    color: orange;
+  }
   li::before {
   content: "• ";
 }

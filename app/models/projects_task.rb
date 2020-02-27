@@ -33,7 +33,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependers
       messages = []
       self.dependers.each{|d|
-          if(d.locked == "begin" || d.disallow) && !(d.begin && d.begin > self.end)
+          if(d.locked == "begin" || d.disallow) && d.begin && !(d.begin > self.end)
             return messages << {message_type:"error", message: "begin of the projects_task with topic_id:#{d.topic_id} is locked and #{d.begin} (too early) we are trying to change topic_id:#{self.topic_id} end to #{self.end}"}
           end
           messages += d.set_begin(self.end,true)
@@ -43,19 +43,19 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependees
       messages = []
       self.dependees.each{|d|
-         puts"whe are here::#{d.topic_id} #{self.dependees.inspect} begin: #{self.begin}"
-          if(d.locked == "end" || d.disallow) && !(d.end && d.end < self.begin)
+         #puts"whe are here::#{d.topic_id} #{self.dependees.inspect} begin: #{self.begin}"
+          if(d.locked == "end" || d.disallow) && d.end && !(d.end < self.begin)
             return messages << {message_type:"error", message: "end of the projects_task with topic_id:#{d.topic_id} is locked and #{d.end} (too late)we are trying to change topic_id:#{self.topic_id} begin to #{self.begin}"}
           end
           messages += d.set_end(self.begin,true)
-          puts"after call set_end in #{d.topic_id}"
          }
       return messages
     end
 
     def set_begin(new_begin, autoset)
+      puts "set_begin on #{topic_id} with #{autoset}"
       messages = []
-      return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked"}] if autoset&&locked == "begin"
+      return self.x_is_locked("warning") if autoset && locked == "begin"
       self.begin = new_begin
       if new_begin == ""
         self.save
@@ -64,7 +64,7 @@ class ProjectsTask < ActiveRecord::Base
       if duration && !self.end
         #handle self.dependers
         self.end = self.begin + duration
-        self.sync_dependers
+        messages += self.sync_dependers
       elsif !duration && self.end
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
@@ -75,11 +75,11 @@ class ProjectsTask < ActiveRecord::Base
           return self.error_duration_bz if duration < 0
         else #duration locked
           self.end = self.begin + duration
-          self.sync_dependers
+          messages += self.sync_dependers
         end
       end
       unless autoset
-        self.sync_dependees
+        messages += self.sync_dependees
       end
       self.save
       return messages
@@ -87,7 +87,8 @@ class ProjectsTask < ActiveRecord::Base
 
     def set_end(new_end, autoset)
       messages = []
-      return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked"}] if autoset&&locked == "end"
+      puts "set_end on #{topic_id}with #{autoset}"
+      return self.x_is_locked("warning") if autoset && locked == "end"
       self.end = new_end
       if new_end == ""
         self.save
@@ -95,7 +96,7 @@ class ProjectsTask < ActiveRecord::Base
       end
       if duration && !self.begin
         self.begin = self.end - duration
-        self.sync_dependees
+        messages += self.sync_dependees
       elsif !duration && self.begin
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
@@ -106,11 +107,11 @@ class ProjectsTask < ActiveRecord::Base
           return self.error_duration_bz if duration < 0
         else #duration locked
           self.begin = self.end - duration
-          self.sync_dependees
+          messages += self.sync_dependees
         end
       end
       unless autoset
-        self.sync_dependers
+        messages += self.sync_dependers
       end
       self.save
       return messages
@@ -142,6 +143,11 @@ class ProjectsTask < ActiveRecord::Base
     def error_duration_bz
       t = Topic.find(topic_id)
       return [{url: t.url, title: t.title, message_type:"error", message: I18n.t("pt_errors.duration_below_zero",topic_id: topic_id)}]
+    end
+
+    def x_is_locked(m_type)
+      t = Topic.find(topic_id)
+      return [{url: t.url, title: t.title, message_type: m_type, message: I18n.t("pt_errors.x_locked",x: locked)}]
     end
 end
 #todo create change messages if change really happend

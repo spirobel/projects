@@ -3,3 +3,4 @@ en:
     projects_enabled: "Enable Projects plugin"
   pt_errors:
     duration_below_zero: "Begin date needs to be before end date!"
+    x_locked: "%{x} is locked and therefore not set"
