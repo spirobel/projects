@@ -39,7 +39,7 @@ function initializeComposer(api) {
              mhtml +="</ul></div>"
            });
 
-              const body = mhtml + JSON.stringify(result.payload)
+              const body = mhtml
               result.target.appEvents.trigger("composer-messages:create", {
                 extraClass: "custom-body",
                 templateName: "custom-body",
