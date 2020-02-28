@@ -38,6 +38,7 @@ module Project
           'modified' => params[:note][:modified],
           'depon' => @projects_task.depon,
           'depby' => @projects_task.depby,
+          'disallow' => @projects_task.disallow,
           'messages' => @messages
         }
         return note
