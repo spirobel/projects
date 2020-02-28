@@ -34,7 +34,7 @@ class ProjectsTask < ActiveRecord::Base
       messages = []
       self.dependers.each{|d|
           if(d.locked == "begin" || d.disallow) && d.begin && !(d.begin > self.end)
-            return messages << {message_type:"error", message: "begin of the projects_task with topic_id:#{d.topic_id} is locked and #{d.begin} (too early) we are trying to change topic_id:#{self.topic_id} end to #{self.end}"}
+            return messages += d.begin_locked_and_early
           end
           messages += d.set_begin(self.end,true)
          }
@@ -43,9 +43,8 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependees
       messages = []
       self.dependees.each{|d|
-         #puts"whe are here::#{d.topic_id} #{self.dependees.inspect} begin: #{self.begin}"
           if(d.locked == "end" || d.disallow) && d.end && !(d.end < self.begin)
-            return messages << {message_type:"error", message: "end of the projects_task with topic_id:#{d.topic_id} is locked and #{d.end} (too late)we are trying to change topic_id:#{self.topic_id} begin to #{self.begin}"}
+            return messages += d.end_locked_and_late
           end
           messages += d.set_end(self.begin,true)
          }
@@ -140,14 +139,36 @@ class ProjectsTask < ActiveRecord::Base
       return messages
     end
 
+    def message_base
+      unless self.topic_id == "drycreate"
+        t = Topic.find(topic_id)
+        return {url:t.url, title: t.title}
+
+      else
+        return {url: "#", title: "drycreate"}
+      end
+    end
     def error_duration_bz
-      t = Topic.find(topic_id)
-      return [{url: t.url, title: t.title, message_type:"error", message: I18n.t("pt_errors.duration_below_zero",topic_id: topic_id)}]
+      m = message_base()
+      m.merge!({message_type:"error", message: I18n.t("pt_errors.duration_below_zero")})
+      return [m]
     end
 
     def x_is_locked(m_type)
-      t = Topic.find(topic_id)
-      return [{url: t.url, title: t.title, message_type: m_type, message: I18n.t("pt_errors.x_locked",x: locked)}]
+      m = message_base()
+      m.merge!({message_type: m_type, message: I18n.t("pt_errors.x_locked",x: locked)})
+      return [m]
+    end
+
+    def end_locked_and_late
+      m = message_base()
+      m.merge!({message_type: "error", message: I18n.t("pt_errors.locked_late")})
+      return [m]
+    end
+    def begin_locked_and_early
+      m = message_base()
+      m.merge!({message_type: "error", message: I18n.t("pt_errors.locked_early")})
+      return [m]
     end
 end
 #todo create change messages if change really happend
