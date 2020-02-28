@@ -78,9 +78,6 @@ class ProjectsTask < ActiveRecord::Base
           messages += self.sync_dependers
         end
       end
-      unless autoset
-        messages += self.sync_dependees
-      end
       self.save
       return messages
     end
@@ -110,9 +107,6 @@ class ProjectsTask < ActiveRecord::Base
           self.begin = self.end - duration
           messages += self.sync_dependees
         end
-      end
-      unless autoset
-        messages += self.sync_dependers
       end
       self.save
       return messages

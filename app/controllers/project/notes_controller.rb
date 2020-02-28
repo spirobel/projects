@@ -64,25 +64,16 @@ module Project
       end
       def handle_modified
         messages = []
-        @projects_task.assign_attributes(task_params)
-        @projects_task.save
+        @projects_task.update(task_params)
          if params[:note][:modified] == 'begin'
-           messages += @projects_task.set_end(params[:note][:end],false)
-           messages += @projects_task.set_duration(params[:note][:duration]) unless @projects_task.locked == "duration"
            messages += @projects_task.set_begin(params[:note][:begin],false)
          elsif  params[:note][:modified] == 'duration'
-           messages += @projects_task.set_end(params[:note][:end],false)
-           messages += @projects_task.set_begin(params[:note][:begin],false)
            messages += @projects_task.set_duration(params[:note][:duration])
-         elsif  params[:note][:modified] == 'end'
-           messages += @projects_task.set_duration(params[:note][:duration]) unless @projects_task.locked == "duration"
-           messages += @projects_task.set_begin(params[:note][:begin],false)
+         else
            messages += @projects_task.set_end(params[:note][:end],false)
-         else #dependencies
-           messages += @projects_task.set_end(params[:note][:end],false)
-           messages += @projects_task.set_duration(params[:note][:duration]) unless @projects_task.locked == "duration"
-           messages += @projects_task.set_begin(params[:note][:begin],false)
          end
+         messages += @projects_task.sync_dependees
+         messages += @projects_task.sync_dependers
          messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
          puts messages
          @messages = {}
