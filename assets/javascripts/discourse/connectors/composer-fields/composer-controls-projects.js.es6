@@ -32,20 +32,13 @@ if(!this.model.projects_task){
     draft_projects_task.id = this.model.topic.id;
   }
   this.model.set('projects_task',draft_projects_task)
-}
+  }
 
- this.set('disallow_classes', "small-btn btn-primary")
-if (this.model.projects_task.disallow){
-  this.set('disallow_classes', "locked-btn small-btn btn-primary")
-}
 },
   actions: {
    lockedChange(name){
      this.model.set('projects_task.locked', name );
    },
-   //TODO dont actually disable buttons, just turn locked button grey except when forbidden
-   //TODO fix duration fill in with display function and also pretty duration
-   //TODO fix titles
    begin(begin) {
      this.model.set('projects_task.begin', begin );
      this.model.set('projects_task.modified', "begin" );
@@ -72,12 +65,10 @@ if (this.model.projects_task.disallow){
    },
    disallow(){
     if (this.model.projects_task.disallow){
-      this.set('disallow_classes', "small-btn btn-primary")
-      this.set('model.projects_task_disallow', false)
+      this.set('model.projects_task.disallow', false)
 
     }else{
-      this.set('disallow_classes', "locked-btn small-btn btn-primary")
-      this.set('model.projects_task_disallow', true)
+      this.set('model.projects_task.disallow', true)
 
     }
    }

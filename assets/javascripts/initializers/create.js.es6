@@ -7,6 +7,14 @@ function initializeComposer(api) {
   //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
+    @computed('projects_task.disallow')
+    disallow_classes(disallow) {
+     if (this.projects_task.disallow){
+       return "locked-btn small-btn btn-primary"
+     } else {
+       return "small-btn btn-primary"
+     }
+    },
     @computed('projects_task.locked')
     closed(locked) {
       if (this.projects_task.locked === "begin" &&
