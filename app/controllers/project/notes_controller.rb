@@ -72,8 +72,12 @@ module Project
          else
            messages += @projects_task.set_end(params[:note][:end],false)
          end
-         messages += @projects_task.sync_dependees
-         messages += @projects_task.sync_dependers
+         unless !@projects_task.begin
+           messages += @projects_task.sync_dependees
+         end
+         unless !@projects_task.end
+           messages += @projects_task.sync_dependers
+         end
          messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
          puts messages
          @messages = {}
