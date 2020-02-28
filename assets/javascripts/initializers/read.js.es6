@@ -6,6 +6,8 @@ import { ajax } from "discourse/lib/ajax";
 import { replaceEmoji } from "discourse/widgets/emoji";
 import { iconNode } from "discourse-common/lib/icon-library";
 import { h } from "virtual-dom";
+import { durationFormat } from '../discourse/lib/utils'
+import { iconHTML } from "discourse-common/lib/icon-library";
 function initializeTopic(api) {
   TopicList.reopenClass({
       topics_array(topic_ids) {
@@ -75,17 +77,20 @@ function initializeTopic(api) {
     @computed('projects_task.begin')
     projectsTaskBeginPretty(begin) {
       if(!begin)return;
-      return "Begin: "+moment(begin).format("D.M.Y, h:mm a");
+      let icon = iconHTML('play');
+      return Ember.String.htmlSafe(""+icon+moment(begin).format("D.M.Y, h:mm a"));
     },
     @computed('projects_task.end')
     projectsTaskEndPretty(end) {
       if(!end)return;
-      return "End: "+moment(end).format("D.M.Y, h:mm a");
+      let icon = iconHTML('step-forward');
+      return Ember.String.htmlSafe(""+icon+moment(end).format("D.M.Y, h:mm a"));
     },
     @computed('projects_task.duration')
     projectsTaskDurationPretty(duration) {
       if(!duration)return;
-      return "Duration: "+moment.duration(duration*1000).humanize();
+      let icon = iconHTML('hourglass');
+      return Ember.String.htmlSafe(""+icon+durationFormat(moment.duration(duration*1000).toISOString()));
     }
   });
 }
