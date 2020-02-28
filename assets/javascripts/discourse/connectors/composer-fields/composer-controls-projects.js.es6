@@ -5,7 +5,6 @@ import { later } from "@ember/runloop";
 
 export default {
   setupComponent(attrs, component) {
-    console.log(this.model)
     this.setProperties({
       dropdowncontent:[
         "duration",
@@ -13,12 +12,27 @@ export default {
         "end"
       ],
     });
+    //no draft
 if(!this.model.projects_task){
-  const draft_projects_task = Object.assign({}, this.model.topic.projects_task);
-  draft_projects_task.id = this.model.topic.id;
+  let draft_projects_task = {}
+  if(!this.model.topic) { //CREATE
+    console.log(this)
+    draft_projects_task.id = "drycreate"
+    draft_projects_task.dry = true
+    draft_projects_task.locked = 'duration'
+    draft_projects_task.begin = ''
+    draft_projects_task.duration = ''
+    draft_projects_task.end = ''
+    draft_projects_task.modified = ''
+    draft_projects_task.depon = []
+    draft_projects_task.depby = []
+
+  } else { //EDIT
+    draft_projects_task = Object.assign({}, this.model.topic.projects_task);
+    draft_projects_task.id = this.model.topic.id;
+  }
   this.model.set('projects_task',draft_projects_task)
 }
-    //SET ON MODEL  when creating    this.model.setProperties({projects_task_locked: 'duration'  });
  this.model.manageLocked();
 
  this.set('disallow_classes', "small-btn btn-primary")

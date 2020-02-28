@@ -2,7 +2,7 @@ module Project
   class NotesController < ApplicationController
     def update
       puts params[:topic_id]
-       @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
+       @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first unless params[:topic_id] == "drycreate"
        #UPDATE
        ActiveRecord::Base.transaction do
         if @projects_task
@@ -11,8 +11,12 @@ module Project
           handle_deps(params[:note][:dry])
           handle_modified()
         else
-          @topic = Topic.find(params[:topic_id])
-          @projects_task = @topic.create_projects_task(task_params)
+          unless params[:topic_id] == "drycreate"
+            @topic = Topic.find(params[:topic_id])
+            @projects_task = @topic.create_projects_task(task_params)
+          else
+            @projects_task = ProjectsTask.create(task_params)
+          end
           handle_deps(params[:note][:dry])
           handle_modified()
         end
@@ -41,6 +45,7 @@ module Project
           'disallow' => @projects_task.disallow,
           'messages' => @messages
         }
+        note["id"] = "drycreate" unless @projects_task.topic_id
         return note
       end
       def handle_deps(dry)

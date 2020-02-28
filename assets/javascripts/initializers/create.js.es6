@@ -55,8 +55,9 @@ function initializeComposer(api) {
 //          this.appEvents.trigger("topic:created", createdPost, composer);
   api.onAppEvent('topic:created', function(createdPost,composer){
        console.log('a topic was created');
-       this.set('projects_task.id',createdPost.topic_id);
-       this.set('projects_task.dry',false);
+       composer.projects_task.id = createdPost.topic_id;
+       composer.projects_task.dry=false;
+       console.log(composer);
        composer.save_projects_task();
      });
 //UPDATE
