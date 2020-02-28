@@ -7,21 +7,24 @@ function initializeComposer(api) {
   //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
-    manageLocked(){
-      if (this.projects_task.locked === "begin") {
-        this.set('begindisabled', true)
-        this.set('durationdisabled', false)
-        this.set('enddisabled', false)
-      } else if (this.projects_task.locked === "end") {
-        this.set('begindisabled', false)
-        this.set('durationdisabled', false)
-        this.set('enddisabled', true)
+    @computed('projects_task.locked')
+    closed(locked) {
+      if (this.projects_task.locked === "begin" &&
+          this.projects_task.duration !== "" &&
+          this.projects_task.end !== "") {
+            return "begin"
+      } else if (this.projects_task.locked === "end" &&
+                 this.projects_task.duration !== "" &&
+                 this.projects_task.begin !== "") {
+            return "end"
+      } else if (this.projects_task.locked === "duration" &&
+                 this.projects_task.begin !== "" &&
+                 this.projects_task.end !== "" ) {
+            return "duration"
       } else {
-        this.set('begindisabled', false)
-        this.set('durationdisabled', true)
-        this.set('enddisabled', false)
+            return ""
       }
-  },
+    },
     async save_projects_task(){
            const noteRecord = this.store.createRecord('note', this.projects_task);
            const   result = await noteRecord.save().then(function(result) {

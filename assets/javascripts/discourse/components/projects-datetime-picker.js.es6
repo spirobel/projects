@@ -15,12 +15,21 @@ export default Ember.Component.extend({
     if(label=="begin"){return 'play'}
     else{return 'step-forward'}
   },
-  @computed('disabled')
-  classes(disabled) {
-    if(disabled){
+  @computed('locked')
+  classes(locked) {
+    if(locked === this.label){
+      if(this.disabled){return "btn-danger btn-primary"}
       return "locked-btn btn-primary";
     } else {
       return "btn-primary";
+    }
+  },
+  @computed('closed')
+  disabled(closed) {
+    if(closed === this.label){
+      return true;
+    } else {
+      return false;
     }
   },
 

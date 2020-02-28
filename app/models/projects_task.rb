@@ -68,7 +68,7 @@ class ProjectsTask < ActiveRecord::Base
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
       elsif duration && self.end
-        return [{message_type:"error", message: "begin of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "begin"
+        return replace_with_js_locked if locked == "begin"
         if locked == "end"
           self.duration = self.end - self.begin
           return self.error_duration_bz if duration < 0
@@ -100,7 +100,7 @@ class ProjectsTask < ActiveRecord::Base
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
       elsif duration && self.begin
-        return [{message_type:"error", message: "end of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "end"
+        return replace_with_js_locked if locked == "end"
         if locked == "begin"
           self.duration = self.end - self.begin
           return self.error_duration_bz if duration < 0
@@ -128,7 +128,7 @@ class ProjectsTask < ActiveRecord::Base
       elsif !self.begin && self.end
         messages += self.set_begin(self.end - self.duration, false)
       elsif self.begin && self.end
-        return [{message_type:"error", message: "duration of the projects_task with topic_id:#{topic_id} is locked (this request should never be sent)"}] if locked == "duration"
+        return replace_with_js_locked if locked == "duration"
         if locked == "begin"
           messages += self.set_end(self.begin + self.duration, false)
         else #end locked
@@ -157,6 +157,11 @@ class ProjectsTask < ActiveRecord::Base
     def x_is_locked(m_type)
       m = message_base()
       m.merge!({message_type: m_type, message: I18n.t("pt_errors.x_locked",x: locked)})
+      return [m]
+    end
+    def replace_with_js_locked
+      m = message_base()
+      m.merge!({message_type: "error", message: I18n.t("pt_errors.x_locked",x: locked)+"REPLACE lock in js"})
       return [m]
     end
 

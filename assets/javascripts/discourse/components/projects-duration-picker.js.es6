@@ -10,12 +10,21 @@ export default Ember.Component.extend({
       return durationFormat(moment.duration(dt*1000).toISOString());
     }
   },
-  @computed('disabled')
-  classes(disabled) {
-    if(disabled){
+  @computed('locked')
+  classes(locked) {
+    if(locked === "duration"){
+      if(this.disabled){return "btn-danger btn-primary"}
       return "locked-btn btn-primary";
     } else {
       return "btn-primary";
+    }
+  },
+  @computed('closed')
+  disabled(closed) {
+    if(closed === "duration"){
+      return true;
+    } else {
+      return false;
     }
   },
   actions: {

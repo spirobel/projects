@@ -33,7 +33,6 @@ if(!this.model.projects_task){
   }
   this.model.set('projects_task',draft_projects_task)
 }
- this.model.manageLocked();
 
  this.set('disallow_classes', "small-btn btn-primary")
 if (this.model.projects_task.disallow){
@@ -43,7 +42,6 @@ if (this.model.projects_task.disallow){
   actions: {
    lockedChange(name){
      this.model.set('projects_task.locked', name );
-     this.model.manageLocked();
    },
    //TODO dont actually disable buttons, just turn locked button grey except when forbidden
    //TODO fix duration fill in with display function and also pretty duration

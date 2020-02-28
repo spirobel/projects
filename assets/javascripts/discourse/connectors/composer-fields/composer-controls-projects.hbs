@@ -1,8 +1,8 @@
 {{#if model.topicFirstPost}}
 <div class="add-task-button-container">
-  {{projects-datetime-picker label="begin" datetime=model.projects_task.begin submit=(action "begin") disabled=model.begindisabled}}
-  {{projects-duration-picker label="duration" duration=model.projects_task.duration submit=(action "duration") disabled=model.durationdisabled}}
-  {{projects-datetime-picker label="end" datetime=model.projects_task.end submit=(action "end") disabled=model.enddisabled}}
+  {{projects-datetime-picker label="begin" datetime=model.projects_task.begin submit=(action "begin") closed=model.closed locked=model.projects_task.locked}}
+  {{projects-duration-picker label="duration" duration=model.projects_task.duration submit=(action "duration") closed=model.closed locked=model.projects_task.locked}}
+  {{projects-datetime-picker label="end" datetime=model.projects_task.end submit=(action "end") closed=model.closed locked=model.projects_task.locked}}
 <div class="max-btn">
   {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=model.projects_task.locked}}
 </div>
