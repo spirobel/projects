@@ -19,11 +19,11 @@ if(!this.model.projects_task){
     console.log(this)
     draft_projects_task.id = "drycreate"
     draft_projects_task.dry = true
-    draft_projects_task.locked = 'duration'
-    draft_projects_task.begin = ''
-    draft_projects_task.duration = ''
-    draft_projects_task.end = ''
-    draft_projects_task.modified = ''
+    draft_projects_task.locked = "duration"
+    draft_projects_task.begin = ""
+    draft_projects_task.duration = ""
+    draft_projects_task.end = ""
+    draft_projects_task.modified = "duration"
     draft_projects_task.depon = []
     draft_projects_task.depby = []
 

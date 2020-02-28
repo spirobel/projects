@@ -18,16 +18,16 @@ function initializeComposer(api) {
     @computed('projects_task.locked')
     closed(locked) {
       if (this.projects_task.locked === "begin" &&
-          this.projects_task.duration !== "" &&
-          this.projects_task.end !== "") {
+          this.projects_task.duration != "" &&
+          this.projects_task.end != "") {
             return "begin"
       } else if (this.projects_task.locked === "end" &&
-                 this.projects_task.duration !== "" &&
-                 this.projects_task.begin !== "") {
+                 this.projects_task.duration != "" &&
+                 this.projects_task.begin != "") {
             return "end"
       } else if (this.projects_task.locked === "duration" &&
-                 this.projects_task.begin !== "" &&
-                 this.projects_task.end !== "" ) {
+                 this.projects_task.begin != "" &&
+                 this.projects_task.end != "" ) {
             return "duration"
       } else {
             return ""
