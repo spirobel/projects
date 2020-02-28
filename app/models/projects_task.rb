@@ -33,7 +33,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependers
       messages = []
       self.dependers.each{|d|
-          if(d.locked == "begin" || d.disallow) && d.begin && !(d.begin > self.end)
+          if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin > self.end)
             return messages += d.begin_locked_and_early
           end
           messages += d.set_begin(self.end,true)
@@ -43,7 +43,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependees
       messages = []
       self.dependees.each{|d|
-          if(d.locked == "end" || d.disallow) && d.end && !(d.end < self.begin)
+          if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end < self.begin)
             return messages += d.end_locked_and_late
           end
           messages += d.set_end(self.begin,true)
