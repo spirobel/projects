@@ -10,6 +10,13 @@ class ProjectsTask < ActiveRecord::Base
     attribute :depon_topics
     attribute :depby
     attribute :depby_topics
+    #attribute :test this adds it to serializers
+    attr_writer :messages
+
+    def messages
+      @messages ||= []
+    end
+
     def depon
       deps = []
       dependees.each{|d| deps.push(d.topic_id)}
@@ -31,39 +38,37 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def sync_dependers
-      messages = []
       self.dependers.each{|d|
           if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin > self.end)
-            return messages += d.begin_locked_and_early
+            return self.messages += d.begin_locked_and_early
           end
-          messages += d.set_begin(self.end,true)
+          self.messages += d.set_begin(self.end,true)
          }
-      return messages
+      return self.messages
     end
     def sync_dependees
-      messages = []
+      puts self.dependees.inspect
       self.dependees.each{|d|
           if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end < self.begin)
-            return messages += d.end_locked_and_late
+            return self.messages += d.end_locked_and_late
           end
-          messages += d.set_end(self.begin,true)
+          self.messages += d.set_end(self.begin,true)
          }
-      return messages
+      return self.messages
     end
 
     def set_begin(new_begin, autoset)
       puts "set_begin on #{topic_id} with #{autoset}"
-      messages = []
       return self.x_is_locked("warning") if autoset && locked == "begin"
       self.begin = new_begin
       if new_begin == ""
         self.save
-        return messages
+        return self.messages
       end
       if duration && !self.end
         #handle self.dependers
         self.end = self.begin + duration
-        messages += self.sync_dependers
+        self.messages += self.sync_dependers
       elsif !duration && self.end
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
@@ -75,25 +80,24 @@ class ProjectsTask < ActiveRecord::Base
           return replace_with_js_locked
         else #duration locked
           self.end = self.begin + duration
-          messages += self.sync_dependers
+          self.messages += self.sync_dependers
         end
       end
       self.save
-      return messages
+      return self.messages
     end
 
     def set_end(new_end, autoset)
-      messages = []
       puts "set_end on #{topic_id}with #{autoset}"
       return self.x_is_locked("warning") if autoset && locked == "end"
       self.end = new_end
       if new_end == ""
         self.save
-        return messages
+        return self.messages
       end
       if duration && !self.begin
         self.begin = self.end - duration
-        messages += self.sync_dependees
+        self.messages += self.sync_dependees
       elsif !duration && self.begin
         self.duration = self.end - self.begin
         return self.error_duration_bz if duration < 0
@@ -105,35 +109,34 @@ class ProjectsTask < ActiveRecord::Base
           return replace_with_js_locked
         else #duration locked
           self.begin = self.end - duration
-          messages += self.sync_dependees
+          self.messages += self.sync_dependees
         end
       end
       self.save
-      return messages
+      return self.messages
     end
 
     def set_duration(new_duration)
-      messages = []
       self.duration = new_duration
       if new_duration == ""
         self.save
-        return messages
+        return self.messages
       end
       if self.begin && !self.end
-        messages += self.set_end(self.begin + self.duration, false)
+        self.messages += self.set_end(self.begin + self.duration, false)
       elsif !self.begin && self.end
-        messages += self.set_begin(self.end - self.duration, false)
+        self.messages += self.set_begin(self.end - self.duration, false)
       elsif self.begin && self.end
         if locked == "begin"
-          messages += self.set_end(self.begin + self.duration, false)
+          self.messages += self.set_end(self.begin + self.duration, false)
         elsif locked == "duration"
           return replace_with_js_locked
         else #end locked
-          messages += self.set_begin(self.end - self.duration, false)
+          self.messages += self.set_begin(self.end - self.duration, false)
         end
       end
       self.save
-      return messages
+      return self.messages
     end
 
     def message_base
