@@ -53,29 +53,32 @@ module Project
 #todo handle self dep
 #WARN if :
 #todo handle circular dep
-#todo check if dependees finish before task begin date)
-#todo check if dependers start after task end date)
-#do dry runs and feed notes data back into composer
         ActiveRecord::Base.transaction(requires_new: true) do
-          @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon])
-          @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby])
+          @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon]) unless params[:note][:depon].blank?
+          @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby]) unless params[:note][:depby].blank?
           raise ActiveRecord::Rollback if dry == "true"
         end
       end
       def handle_modified
         messages = []
+        puts params[:note][:modified]
         @projects_task.update(task_params)
-         if params[:note][:modified] == 'begin'
+         if params[:note][:modified] == "begin"
+           puts "begin"
            messages += @projects_task.set_begin(params[:note][:begin],false)
-         elsif  params[:note][:modified] == 'duration'
+         elsif  params[:note][:modified] == "duration"
+           puts "duration"
            messages += @projects_task.set_duration(params[:note][:duration])
-         else
+         elsif params[:note][:modified] == "end"
+           puts "end"
            messages += @projects_task.set_end(params[:note][:end],false)
          end
          unless !@projects_task.begin
+           puts "syncing dependees"
            messages += @projects_task.sync_dependees
          end
          unless !@projects_task.end
+           puts "syncing dependers"
            messages += @projects_task.sync_dependers
          end
          messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
