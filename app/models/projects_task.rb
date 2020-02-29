@@ -72,7 +72,7 @@ class ProjectsTask < ActiveRecord::Base
           self.duration = self.end - self.begin
           return self.error_duration_bz if duration < 0
         elsif locked == "begin"
-          return []
+          return replace_with_js_locked
         else #duration locked
           self.end = self.begin + duration
           messages += self.sync_dependers
@@ -102,7 +102,7 @@ class ProjectsTask < ActiveRecord::Base
           self.duration = self.end - self.begin
           return self.error_duration_bz if duration < 0
         elsif locked == "end"
-          return []
+          return replace_with_js_locked
         else #duration locked
           self.begin = self.end - duration
           messages += self.sync_dependees
@@ -127,7 +127,7 @@ class ProjectsTask < ActiveRecord::Base
         if locked == "begin"
           messages += self.set_end(self.begin + self.duration, false)
         elsif locked == "duration"
-          return []
+          return replace_with_js_locked
         else #end locked
           messages += self.set_begin(self.end - self.duration, false)
         end
@@ -154,6 +154,12 @@ class ProjectsTask < ActiveRecord::Base
     def x_is_locked(m_type)
       m = message_base()
       m.merge!({message_type: m_type, message: I18n.t("pt_errors.x_locked",x: locked)})
+      return [m]
+    end
+
+    def replace_with_js_locked
+      m = message_base()
+      m.merge!({message_type: "error", message: I18n.t("pt_errors.x_locked",x: locked)+"REPLACE lock in js"})
       return [m]
     end
 
