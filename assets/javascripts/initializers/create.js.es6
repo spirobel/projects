@@ -2,6 +2,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { default as computed, observes, on } from 'ember-addons/ember-computed-decorators';
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
+import { bed_block_format } from '../discourse/lib/utils'
 function initializeComposer(api) {
   //DRAFT
   //TODO on composer open also fire dry to get messages
@@ -40,7 +41,9 @@ function initializeComposer(api) {
            let mhtml = ""
            const messis = result.payload.messages
            Object.keys(messis).forEach((i) => {
-             mhtml += `<div><h4><a href=${messis[i][0].url}>${messis[i][0].title}</a></h4><ul class="pt_messages">`
+             mhtml += `<div><h4><a href=${messis[i][0].url}>${messis[i][0].title}</a>
+             ${bed_block_format(messis[i][0].begin,messis[i][0].duration,messis[i][0].end)}
+             </h4><ul class="pt_messages">`
              messis[i].forEach((m, i) => {
                mhtml+=`<li class="${m.message_type}">${m.message}</li>`
              });

@@ -142,7 +142,7 @@ class ProjectsTask < ActiveRecord::Base
     def message_base
       unless self.topic_id == "drycreate"
         t = Topic.find(topic_id)
-        return {url:t.url, title: t.title}
+        return {url:t.url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
 
       else
         return {url: "#", title: "drycreate"}
