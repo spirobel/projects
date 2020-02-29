@@ -10,10 +10,10 @@ export default Ember.Component.extend({
       return durationFormat(moment.duration(dt*1000).toISOString());
     }
   },
-  @computed('locked')
-  classes(locked) {
+  @computed('locked','disabled')
+  classes(locked,disabled) {
     if(locked === "duration"){
-      if(this.disabled){return "btn-danger btn-primary"}
+      if(disabled){return "btn-danger btn-primary"}
       return "locked-btn btn-primary";
     } else {
       return "btn-primary";

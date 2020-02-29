@@ -18,16 +18,16 @@ function initializeComposer(api) {
     @computed('projects_task.locked')
     closed(locked) {
       if (this.projects_task.locked === "begin" &&
-          this.projects_task.duration != "" &&
-          this.projects_task.end != "") {
+          this.projects_task.duration &&
+          this.projects_task.end ) {
             return "begin"
       } else if (this.projects_task.locked === "end" &&
-                 this.projects_task.duration != "" &&
-                 this.projects_task.begin != "") {
+                 this.projects_task.duration &&
+                 this.projects_task.begin ) {
             return "end"
       } else if (this.projects_task.locked === "duration" &&
-                 this.projects_task.begin != "" &&
-                 this.projects_task.end != "" ) {
+                 this.projects_task.begin  &&
+                 this.projects_task.end  ) {
             return "duration"
       } else {
             return ""
@@ -56,6 +56,9 @@ function initializeComposer(api) {
               return result.payload
           }).catch(console.error);
           this.set("projects_task", result);
+          if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
+          if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
+          if(!this.projects_task.end){this.set("projects_task.end",  "") }
       },
 
 
