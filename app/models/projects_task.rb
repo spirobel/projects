@@ -181,11 +181,13 @@ class ProjectsTask < ActiveRecord::Base
       sdc_errors = []
       #check subdependees
       dependee_list = self.all_dependees
+      dependee_list.pop # we have to remove self from recursive method invocation
       dee_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       dee_dups += self.depon
       sub_dee_dups = dee_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       #check subdependers
       depender_list = self.all_dependers
+      depender_list.pop
       der_dups = depender_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       der_dups += self.depby
       sub_der_dups = der_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
@@ -202,7 +204,7 @@ class ProjectsTask < ActiveRecord::Base
       dependee_list.uniq!
       dependee_list += depender_list
       circ_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
-      sub_dee_dups.each{|d|
+      circ_dups.each{|d|
         t = Topic.find(d)
         sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
         end: t.projects_task.end, duration: t.projects_task.duration,
