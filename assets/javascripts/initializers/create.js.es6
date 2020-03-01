@@ -8,6 +8,26 @@ function initializeComposer(api) {
   //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
+    //https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/models/composer.js.es6#L1165
+    @observes('projects_task.begin',
+              'projects_task.end',
+              'projects_task.duration','projects_task.locked',
+              'projects_task.modified','projects_task.depon.[]',
+              'projects_task.depby.[]','projects_task.dry','projects_task.disallow')
+    ptdataChanged() {
+      const draftStatus = this.draftStatus;
+      if (draftStatus && !this._clearingStatus) {
+        this._clearingStatus = later(
+          this,
+          () => {
+            this.setProperties({ draftStatus: null, draftConflictUser: null });
+            this._clearingStatus = null;
+            this.setProperties({ draftSaving: false, draftSaved: false });
+          },
+          Ember.Test ? 0 : 1000
+        );
+      }
+    },
     @computed('projects_task.disallow')
     disallow_classes(disallow) {
      if (this.projects_task.disallow){
@@ -97,26 +117,14 @@ function initializeComposer(api) {
 
 
   api.modifyClass("controller:composer", {
-//DRAFT observe fields that should be saved periodically to draft
-//TODO do datachange on the composer.reopen (MODEL) and shouldsavedraft on CONTROLLER (here)
-  @observes("model.begin", "model.time")
-  __shouldSaveDraft() {
-    //dataChanged() {
-    if (this.model && this.model.draftStatus && !this.model._clearingStatus) {
-      const m = this.model;
-      const draftStatus = m.draftStatus;
-      m._clearingStatus = later(
-        m,
-        () => {
-          m.setProperties({ draftStatus: null, draftConflictUser: null });
-          m._clearingStatus = null;
-          m.setProperties({ draftSaving: false, draftSaved: false });
-        },
-        Ember.Test ? 0 : 1000
-      );
-    }
-
-  debounce(this, this._saveDraft, 2000);
+//https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/controllers/composer.js.es6#L1075
+  @observes('model.projects_task.begin',
+            'model.projects_task.end',
+            'model.projects_task.duration','model.projects_task.locked',
+            'model.projects_task.modified','model.projects_task.depon.[]',
+            'model.projects_task.depby.[]','model.projects_task.dry','model.projects_task.disallow')
+  _ptshouldSaveDraft() {
+    debounce(this, this._saveDraft, 2000);
   },
 
 
