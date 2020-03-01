@@ -37,23 +37,50 @@ class ProjectsTask < ActiveRecord::Base
       Topic.find(depby)
     end
 
+    def all_dependers
+      deps =[]
+      self.dependers.each{|d|
+        deps += d.all_dependers
+      }
+      return deps << self.topic_id
+    end
+    def all_dependees
+      deps =[]
+      self.dependees.each{|d|
+        deps += d.all_dependees
+      }
+      return deps << self.topic_id
+    end
+
+    def handle_deps(dry, depon, depby)
+      ActiveRecord::Base.transaction(requires_new: true) do
+        self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil)
+        self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil)
+        self.check_sub_circdep
+        raise ActiveRecord::Rollback if dry == "true"
+      end
+    end
+
     def sync_dependers
+      if self.messages.none? {|m| m.has_key? :sdc}
       self.dependers.each{|d|
           if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin > self.end)
             return self.messages += d.begin_locked_and_early
           end
           self.messages += d.set_begin(self.end,true)
          }
+      end
       return self.messages
     end
     def sync_dependees
-      puts self.dependees.inspect
+      if self.messages.none? {|m| m.has_key? :sdc}
       self.dependees.each{|d|
           if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end < self.begin)
             return self.messages += d.end_locked_and_late
           end
           self.messages += d.set_end(self.begin,true)
          }
+      end
       return self.messages
     end
 
@@ -148,6 +175,56 @@ class ProjectsTask < ActiveRecord::Base
         return {url: "#", title: "drycreate"}
       end
     end
+
+    def check_sub_circdep
+      #has to run in any case and sync deps should not be run if there is an error
+      sdc_errors = []
+      #check subdependees
+      dependee_list = self.all_dependees
+      dee_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+      dee_dups += self.depon
+      sub_dee_dups = dee_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+      #check subdependers
+      depender_list = self.all_dependers
+      der_dups = depender_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+      der_dups += self.depby
+      sub_der_dups = der_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+
+      sub_dee_dups += sub_der_dups
+      sub_dee_dups.each{|d|
+        t = Topic.find(d)
+        sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
+        end: t.projects_task.end, duration: t.projects_task.duration,
+                message: I18n.t("pt_errors.sub_dep")}
+      }
+      #circular dependencies
+      depender_list.uniq!
+      dependee_list.uniq!
+      dependee_list += depender_list
+      circ_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+      sub_dee_dups.each{|d|
+        t = Topic.find(d)
+        sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
+        end: t.projects_task.end, duration: t.projects_task.duration,
+                message: I18n.t("pt_errors.circ_dep")}
+      }
+      self.messages += sdc_errors
+      #check self dependency (included in circular dependency check)
+      #check circular dependency(uniq! the lists before comparing)
+        #write a list with all dependees of all dependees
+        #write a list with all dependers of all dependers
+        #check if two lists together are uniq
+      #check for subdependencies
+           #write a list with all dependers of all dependers
+           #find all the der_dups
+           #check if the dups are contained in depby
+           #write a list with all dependees of all dependees
+           #find all the dee_dups
+           #check if the dups are contained in depon
+    end
+
+
+
     def error_duration_bz
       m = message_base()
       m.merge!({message_type:"error", message: I18n.t("pt_errors.duration_below_zero")})

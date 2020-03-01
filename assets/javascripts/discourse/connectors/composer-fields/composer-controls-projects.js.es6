@@ -62,7 +62,6 @@ this.model.save_projects_task()
    dependencies(depon, depby){
      this.set("model.projects_task.depon",depon)
      this.set("model.projects_task.depby",depby)
-     this.model.set('projects_task.modified', "dependencies" );
      this.model.set('projects_task.dry', true );
      this.model.save_projects_task()
    },

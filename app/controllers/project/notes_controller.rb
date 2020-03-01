@@ -8,7 +8,7 @@ module Project
         if @projects_task
           # @projects_task.update(task_params)
           #handle_locked()
-          handle_deps(params[:note][:dry])
+          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby])
           handle_modified()
         else
           unless params[:topic_id] == "drycreate"
@@ -17,7 +17,7 @@ module Project
           else
             @projects_task = ProjectsTask.create(task_params)
           end
-          handle_deps(params[:note][:dry])
+          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby])
           handle_modified()
         end
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"
@@ -48,17 +48,7 @@ module Project
         note["id"] = "drycreate" unless @projects_task.topic_id
         return note
       end
-      def handle_deps(dry)
-        #byebug
-#todo handle self dep
-#WARN if :
-#todo handle circular dep
-        ActiveRecord::Base.transaction(requires_new: true) do
-          @projects_task.dependees=ProjectsTask.where(topic_id: params[:note][:depon]) unless params[:note][:depon].blank?
-          @projects_task.dependers=ProjectsTask.where(topic_id: params[:note][:depby]) unless params[:note][:depby].blank?
-          raise ActiveRecord::Rollback if dry == "true"
-        end
-      end
+
       def handle_modified
         messages = []
         puts params[:note][:modified]
