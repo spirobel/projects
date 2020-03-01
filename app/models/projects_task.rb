@@ -37,25 +37,29 @@ class ProjectsTask < ActiveRecord::Base
       Topic.find(depby)
     end
 
-    def all_dependers
+    def all_dependers(count)
+      count += 1
+      raise  if count > 200
       deps =[]
       self.dependers.each{|d|
-        deps += d.all_dependers
+        deps += d.all_dependers(count)
       }
       return deps << self.topic_id
     end
-    def all_dependees
+    def all_dependees(count)
+      count += 1
+      return [] if count > 200
       deps =[]
       self.dependees.each{|d|
-        deps += d.all_dependees
+        deps += d.all_dependees(count)
       }
       return deps << self.topic_id
     end
 
     def handle_deps(dry, depon, depby)
       ActiveRecord::Base.transaction(requires_new: true) do
-        self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil)
-        self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil)
+        self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil, id: self.id)
+        self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil, id: self.id)
         self.check_sub_circdep
         raise ActiveRecord::Rollback if dry == "true"
       end
@@ -180,14 +184,14 @@ class ProjectsTask < ActiveRecord::Base
       #has to run in any case and sync deps should not be run if there is an error
       sdc_errors = []
       #check subdependees
-      dependee_list = self.all_dependees
-      dependee_list.pop # we have to remove self from recursive method invocation
+      dependee_list = self.all_dependees(0)
+      dependee_list.select!{|d|d != self.topic_id}
       dee_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       dee_dups += self.depon
       sub_dee_dups = dee_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       #check subdependers
-      depender_list = self.all_dependers
-      depender_list.pop
+      depender_list = self.all_dependers(0)
+      dependee_list.select!{|d|d != self.topic_id}
       der_dups = depender_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       der_dups += self.depby
       sub_der_dups = der_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
@@ -203,6 +207,8 @@ class ProjectsTask < ActiveRecord::Base
       depender_list.uniq!
       dependee_list.uniq!
       dependee_list += depender_list
+      puts "both list: ", dependee_list
+
       circ_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       circ_dups.each{|d|
         t = Topic.find(d)
