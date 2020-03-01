@@ -33,7 +33,9 @@ if(!this.model.projects_task){
   }
   this.model.set('projects_task',draft_projects_task)
   }
-
+//shoot dry on composer open to display messages
+this.model.set('projects_task.dry', true );
+this.model.save_projects_task()
 },
   actions: {
    lockedChange(name){
