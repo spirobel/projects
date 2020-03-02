@@ -37,21 +37,17 @@ class ProjectsTask < ActiveRecord::Base
       Topic.find(depby)
     end
 
-    def all_dependers(count)
-      count += 1
-      raise  if count > 200
+    def all_dependers
       deps =[]
       self.dependers.each{|d|
-        deps += d.all_dependers(count)
+        deps += d.all_dependers
       }
       return deps << self.topic_id
     end
-    def all_dependees(count)
-      count += 1
-      return [] if count > 200
+    def all_dependees
       deps =[]
       self.dependees.each{|d|
-        deps += d.all_dependees(count)
+        deps += d.all_dependees
       }
       return deps << self.topic_id
     end
@@ -208,13 +204,13 @@ class ProjectsTask < ActiveRecord::Base
       end
 
       #check subdependees
-      dependee_list = self.all_dependees(0)
+      dependee_list = self.all_dependees
       dependee_list.select!{|d|d != self.topic_id}
       dee_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       dee_dups += self.depon
       sub_dee_dups = dee_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       #check subdependers
-      depender_list = self.all_dependers(0)
+      depender_list = self.all_dependers
       dependee_list.select!{|d|d != self.topic_id}
       der_dups = depender_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       der_dups += self.depby
@@ -228,18 +224,6 @@ class ProjectsTask < ActiveRecord::Base
                 message: I18n.t("pt_errors.sub_dep")}
       }
       self.messages += sdc_errors
-      #check self dependency (included in circular dependency check)
-      #check circular dependency(uniq! the lists before comparing)
-        #write a list with all dependees of all dependees
-        #write a list with all dependers of all dependers
-        #check if two lists together are uniq
-      #check for subdependencies
-           #write a list with all dependers of all dependers
-           #find all the der_dups
-           #check if the dups are contained in depby
-           #write a list with all dependees of all dependees
-           #find all the dee_dups
-           #check if the dups are contained in depon
     end
 
 
