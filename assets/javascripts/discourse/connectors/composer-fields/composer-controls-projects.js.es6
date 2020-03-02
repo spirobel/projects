@@ -26,6 +26,7 @@ if(!this.model.projects_task){
     draft_projects_task.modified = "duration"
     draft_projects_task.depon = []
     draft_projects_task.depby = []
+    draft_projects_task.categoryId = this.model.categoryId
 
   } else { //EDIT
     draft_projects_task = Object.assign({}, this.model.topic.projects_task);

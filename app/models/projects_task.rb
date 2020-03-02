@@ -56,11 +56,12 @@ class ProjectsTask < ActiveRecord::Base
       return deps << self.topic_id
     end
 
-    def handle_deps(dry, depon, depby)
+    def handle_deps(dry, depon, depby, catid)
+      catid = Topic.find(topic_id).category_id  unless self.topic_id == "drycreate"
       ActiveRecord::Base.transaction(requires_new: true) do
         self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil, id: self.id)
         self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil, id: self.id)
-        self.check_sub_circdep
+        self.check_sub_circdep(catid)
         raise ActiveRecord::Rollback if dry == "true"
       end
     end
@@ -180,13 +181,32 @@ class ProjectsTask < ActiveRecord::Base
       end
     end
 
-    def check_sub_circdep
+    def check_sub_circdep(catid)
       #has to run in any case and sync deps should not be run if there is an error
       sdc_errors = []
-      tarjan = Tarjan.new
-      self.messages << {message_type:"error",sdc: true, url:"#", title:"tarjan",
-              message: tarjan.sccs} unless tarjan.sccs.nil?
-      return unless tarjan.sccs.nil?
+
+      #circular dependencies
+      tarjan = Tarjan.new(catid)
+      circ_deps = tarjan.sccs.select { |v| v.size > 1 }.flatten
+      unless circ_deps.empty?
+        tasks = ProjectsTask.find(circ_deps)
+        tasks.each{|c|
+        unless c.topic_id.nil?
+          t = Topic.find(c.topic_id)
+          url = t.url
+          title = t.title
+        else
+          url = "#"
+          title = "drycreate"
+        end
+        sdc_errors << {message_type:"error",sdc: true, url:url, title: title, begin: c.begin,
+                        end: c.end, duration: c.duration,
+                        message: I18n.t("pt_errors.circ_dep")}
+        }
+        self.messages += sdc_errors
+        return
+      end
+
       #check subdependees
       dependee_list = self.all_dependees(0)
       dependee_list.select!{|d|d != self.topic_id}
@@ -206,19 +226,6 @@ class ProjectsTask < ActiveRecord::Base
         sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
         end: t.projects_task.end, duration: t.projects_task.duration,
                 message: I18n.t("pt_errors.sub_dep")}
-      }
-      #circular dependencies
-      depender_list.uniq!
-      dependee_list.uniq!
-      dependee_list += depender_list
-      puts "both list: ", dependee_list
-
-      circ_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
-      circ_dups.each{|d|
-        t = Topic.find(d)
-        sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
-        end: t.projects_task.end, duration: t.projects_task.duration,
-                message: I18n.t("pt_errors.circ_dep")}
       }
       self.messages += sdc_errors
       #check self dependency (included in circular dependency check)

@@ -1,11 +1,11 @@
 class Tarjan
   attr_accessor :sccs
-  def initialize
+  def initialize(catid)
     @index = 0
     @stack = []
     @tasks = []
     self.sccs = []
-    ProjectsTask.ids.each {|t|
+    ProjectsTask.joins(:topic).where('topics.category_id' => catid).ids.each {|t|
       if @tasks[t].nil?
         strongconnect(t)
       end
@@ -28,7 +28,7 @@ class Tarjan
       loop do
         x = @stack.pop
         @tasks[x][:onStack] = false
-        scc << x 
+        scc << x
         break if x == t
       end
       self.sccs << scc

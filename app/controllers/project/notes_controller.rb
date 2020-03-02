@@ -8,7 +8,7 @@ module Project
         if @projects_task
           # @projects_task.update(task_params)
           #handle_locked()
-          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby])
+          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby],params[:note][:categoryId])
           handle_modified()
         else
           unless params[:topic_id] == "drycreate"
@@ -17,7 +17,7 @@ module Project
           else
             @projects_task = ProjectsTask.create(task_params)
           end
-          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby])
+          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby],params[:note][:categoryId])
           handle_modified()
         end
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"

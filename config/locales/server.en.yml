@@ -7,4 +7,4 @@ en:
     locked_late: "end date is locked and later than the desired beginning date of this task!"
     locked_early: "begin date is locked and earlier than the desired end date of this task!"
     sub_dep: "there exist two dependencies with this task(maybe through other tasks). You must delete one."
-    circ_dep: "we depend on this task. This task depends on us (maybe through other tasks). Make a decision!"
+    circ_dep: "this task is part of of a circular dependency chain. Please make sure there are no circular dependencies!"
