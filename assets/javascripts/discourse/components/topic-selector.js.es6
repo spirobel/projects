@@ -29,7 +29,7 @@ export default Component.extend({
     //eat topics as ids
     TopicList.topics_array(this.selectedTopicsID).then(results => selectedTopics.pushObjects(results))
     //TODO set category
-    this.set('additionalFilters','#Lounge')
+    this.set('additionalFilters','#'+this.cat)
   },
 
   @observes("topicTitle")

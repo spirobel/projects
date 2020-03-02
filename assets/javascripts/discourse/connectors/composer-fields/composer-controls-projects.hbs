@@ -7,7 +7,7 @@
   {{dropdown-select-box content=dropdowncontent  onSelect=(action "lockedChange") value=model.projects_task.locked}}
 </div>
   <div class="max-btn">
-  {{projects-dependencies-picker submit=(action "dependencies") deponTopics=model.projects_task.depon depbyTopics=model.projects_task.depby}}
+  {{projects-dependencies-picker submit=(action "dependencies") deponTopics=model.projects_task.depon depbyTopics=model.projects_task.depby cat=model.category.name}}
 </div>
 <div>
   {{d-button

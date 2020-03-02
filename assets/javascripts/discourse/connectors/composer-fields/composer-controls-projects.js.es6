@@ -16,7 +16,6 @@ export default {
 if(!this.model.projects_task){
   let draft_projects_task = {}
   if(!this.model.topic) { //CREATE
-    console.log(this)
     draft_projects_task.id = "drycreate"
     draft_projects_task.dry = true
     draft_projects_task.locked = "duration"
