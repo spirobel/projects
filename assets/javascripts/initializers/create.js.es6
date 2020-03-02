@@ -78,6 +78,12 @@ function initializeComposer(api) {
               });
               return result.payload
           }).catch(console.error);
+          if(!result){
+            const body = "an error has occured. please retry"
+            this.appEvents.trigger("composer-messages:create",
+             {extraClass: "custom-body",templateName: "custom-body", body});
+            return
+          }
           this.set("projects_task", result);
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
