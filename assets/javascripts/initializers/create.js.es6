@@ -65,6 +65,7 @@ function initializeComposer(api) {
              ${bed_block_format(messis[i][0].begin,messis[i][0].duration,messis[i][0].end)}
              </h4><ul class="pt_messages">`
              messis[i].forEach((m, i) => {
+               if(m.message_type == "error"){result.payload.pt_error = true}
                mhtml+=`<li class="${m.message_type}">${m.message}</li>`
              });
              mhtml +="</ul></div>"
@@ -88,6 +89,7 @@ function initializeComposer(api) {
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
           if(!this.projects_task.end){this.set("projects_task.end",  "") }
+          return result.pt_error
       },
 
 
@@ -107,16 +109,14 @@ function initializeComposer(api) {
 //this.begin time pr_t_att etc is all there
 //also:this.action: "edit" and this.topic.id
 //topic.currentPost: 1
- api.composerBeforeSave(function() {
+ api.composerBeforeSave(async function() {
    console.log("Before saving, do something!");
    if (this.action == 'edit') {
      this.set('projects_task.id',this.topic.id);
      this.set('projects_task.dry',false);
 
-     this.save_projects_task();
-//  return Promise.reject(new Error("asdasd"));
-
-// actually we should return  a promise that always resolves because the save should not be aborted
+     let pt_error = await this.save_projects_task();
+     if(pt_error){return Promise.reject()}
     }
     return Promise.resolve();
  });
