@@ -183,6 +183,10 @@ class ProjectsTask < ActiveRecord::Base
     def check_sub_circdep
       #has to run in any case and sync deps should not be run if there is an error
       sdc_errors = []
+      tarjan = Tarjan.new
+      self.messages << {message_type:"error",sdc: true, url:"#", title:"tarjan",
+              message: tarjan.sccs} unless tarjan.sccs.nil?
+      return unless tarjan.sccs.nil?
       #check subdependees
       dependee_list = self.all_dependees(0)
       dependee_list.select!{|d|d != self.topic_id}

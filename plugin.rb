@@ -13,6 +13,7 @@ enabled_site_setting :projects_enabled
 PLUGIN_NAME ||= "Project".freeze
 
 load File.expand_path('../lib/projects/engine.rb', __FILE__)
+load File.expand_path('../lib/tarjan.rb', __FILE__)
 after_initialize do
   add_to_serializer :topic_view, :projects_task do
     object.topic.projects_task
