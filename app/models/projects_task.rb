@@ -53,7 +53,7 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def handle_deps(dry, depon, depby, catid)
-      catid = Topic.find(topic_id).category_id  if catid.nil?
+      catid = Topic.find(topic_id).category_id  if catid.blank?
       ActiveRecord::Base.transaction(requires_new: true) do
         self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil, id: self.id)
         self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil, id: self.id)
