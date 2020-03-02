@@ -24,23 +24,39 @@ after_initialize do
   add_to_serializer :post, :projects_task do
     object.projects_task
   end
-  PostRevisor.track_topic_field(:projects_task_attributes) { |tc| puts "Hello world!" }
-  add_permitted_post_create_param({:projects_task_attributes => [:duration]},:hash)
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
   Category.register_custom_field_type('projects_enabled', :boolean)
   [
-    "projects_enabled"
+    "projects_enabled",
+    "earliest_begin",
+    "latest_end"
   ].each do |key|
     Site.preloaded_category_custom_fields << key if Site.respond_to? :preloaded_category_custom_fields
     add_to_serializer(:basic_category, key.to_sym) { object.send(key) }
   end
   class ::Category
+    attribute :earliest_begin
+    attribute :latest_end
     def projects_enabled
       if self.custom_fields['projects_enabled'] != nil
         self.custom_fields['projects_enabled']
       else
         false
       end
+    end
+
+    def earliest_begin
+      e_begin = ProjectsTask.joins(:topic).where('topics.category_id' => self.id).where.not(begin:nil).order(:begin).first
+      e_begin.begin unless e_begin.nil?
+    end
+    def latest_end
+      l_end =ProjectsTask.joins(:topic).where('topics.category_id' => self.id).where.not(end:nil).order(end: :desc).first
+      l_end.end unless l_end.nil?
+    end
+    def longest_duration
+      store = PluginStore.new(PLUGIN_NAME)
+      store.set(self.id, "bla")
+      store.get(self.id)
     end
   end
   class ::TopicQuery
