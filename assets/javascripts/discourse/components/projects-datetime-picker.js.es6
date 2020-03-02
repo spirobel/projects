@@ -2,10 +2,10 @@ import showModal from 'discourse/lib/show-modal';
 import computed from "discourse-common/utils/decorators";
 
 export default Ember.Component.extend({
-  @computed('datetime')
-  buttonLabel(dt){
+  @computed('datetime', 'label')
+  buttonLabel(dt, label){
     if(!dt) {
-      return "set "+this.label+" date!"
+      return "set "+label+" date!"
     } else {
       return moment(dt).format("D.M.Y, h:mm a");
     }
@@ -15,18 +15,18 @@ export default Ember.Component.extend({
     if(label=="begin"){return 'play'}
     else{return 'step-forward'}
   },
-  @computed('locked','disabled')
-  classes(locked, disabled) {
-    if(locked === this.label){
+  @computed('locked','disabled', 'label')
+  classes(locked, disabled, label) {
+    if(locked === label){
       if(disabled){return "btn-danger btn-primary"}
       return "locked-btn btn-primary";
     } else {
       return "btn-primary";
     }
   },
-  @computed('closed')
-  disabled(closed) {
-    if(closed === this.label){
+  @computed('closed','label')
+  disabled(closed, label) {
+    if(closed === label){
       return true;
     } else {
       return false;

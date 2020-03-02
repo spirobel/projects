@@ -5,7 +5,7 @@ export default Ember.Component.extend({
   @computed('duration')
   buttonLabel(dt){
     if(!dt) {
-      return "set "+this.label+"!"
+      return "set duration!"
     } else {
       return durationFormat(moment.duration(dt*1000).toISOString());
     }

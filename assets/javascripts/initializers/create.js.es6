@@ -30,25 +30,22 @@ function initializeComposer(api) {
     },
     @computed('projects_task.disallow')
     disallow_classes(disallow) {
-     if (this.projects_task.disallow){
+     if (disallow){
        return "locked-btn small-btn btn-primary"
      } else {
        return "small-btn btn-primary"
      }
     },
-    @computed('projects_task.locked')
-    closed(locked) {
-      if (this.projects_task.locked === "begin" &&
-          this.projects_task.duration &&
-          this.projects_task.end ) {
+    @computed('projects_task.locked',
+          'projects_task.duration',
+          'projects_task.begin',
+          'projects_task.end')
+    closed(locked, duration, begin, end) {
+      if (locked === "begin" && duration && end ) {
             return "begin"
-      } else if (this.projects_task.locked === "end" &&
-                 this.projects_task.duration &&
-                 this.projects_task.begin ) {
+      } else if (locked === "end" && duration && begin ) {
             return "end"
-      } else if (this.projects_task.locked === "duration" &&
-                 this.projects_task.begin  &&
-                 this.projects_task.end  ) {
+      } else if (locked === "duration" && begin  && end  ) {
             return "duration"
       } else {
             return ""

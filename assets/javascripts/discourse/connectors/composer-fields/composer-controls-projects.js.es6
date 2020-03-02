@@ -1,6 +1,5 @@
 import { getOwner } from 'discourse-common/lib/get-owner';
 import showModal from "discourse/lib/show-modal";
-import computed from "discourse-common/utils/decorators";
 import { later } from "@ember/runloop";
 
 export default {
