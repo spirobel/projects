@@ -53,7 +53,7 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def handle_deps(dry, depon, depby, catid)
-      catid = Topic.find(topic_id).category_id  unless self.topic_id == "drycreate"
+      catid = Topic.find(topic_id).category_id  if catid.nil?
       ActiveRecord::Base.transaction(requires_new: true) do
         self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil, id: self.id)
         self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil, id: self.id)
@@ -173,7 +173,7 @@ class ProjectsTask < ActiveRecord::Base
         return {url:t.url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
 
       else
-        return {url: "#", title: "drycreate"}
+        return {url: "#", title: "the topic you are editing right now"}
       end
     end
 
@@ -193,7 +193,7 @@ class ProjectsTask < ActiveRecord::Base
           title = t.title
         else
           url = "#"
-          title = "drycreate"
+          title = "the topic you are editing right now"
         end
         sdc_errors << {message_type:"error",sdc: true, url:url, title: title, begin: c.begin,
                         end: c.end, duration: c.duration,

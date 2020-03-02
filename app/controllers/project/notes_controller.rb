@@ -1,38 +1,25 @@
 module Project
   class NotesController < ApplicationController
     def update
-      puts params[:topic_id]
-       @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first unless params[:topic_id] == "drycreate"
-       #UPDATE
-       ActiveRecord::Base.transaction do
-        if @projects_task
-          # @projects_task.update(task_params)
-          #handle_locked()
-          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby],params[:note][:categoryId])
-          handle_modified()
-        else
-          unless params[:topic_id] == "drycreate"
-            @topic = Topic.find(params[:topic_id])
-            @projects_task = @topic.create_projects_task(task_params)
-          else
-            @projects_task = ProjectsTask.create(task_params)
-          end
-          @projects_task.handle_deps(params[:note][:dry],params[:note][:depon],params[:note][:depby],params[:note][:categoryId])
-          handle_modified()
+      @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first unless params[:topic_id] == "drycreate"
+      ActiveRecord::Base.transaction do
+        if !@projects_task
+          @projects_task = ProjectsTask.create(task_params)
+          @projects_task.topic = Topic.find(params[:topic_id]) unless params[:topic_id] == "drycreate"
         end
+        @projects_task.update(task_params)
+        @projects_task.handle_deps(params[:note][:dry],
+          params[:note][:depon],
+          params[:note][:depby],
+          params[:note][:categoryId])
+        handle_modified()
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"
-        end
+      end
       render json: { note: return_note }
-
-
-#TODOrename params to fit model
-#find topic find task
-#task exists > update; else > create task
     end
+
     private
       def return_note
-        #@projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first
-        #todo feed modified and derived from back into projects_task this means delete the above statement
         note = {
           'id' => @projects_task.topic_id,
           'begin' => @projects_task.begin,
@@ -43,7 +30,8 @@ module Project
           'depon' => @projects_task.depon,
           'depby' => @projects_task.depby,
           'disallow' => @projects_task.disallow,
-          'messages' => @messages
+          'messages' => @messages,
+          'categoryId' => params[:note][:categoryId]
         }
         note["id"] = "drycreate" unless @projects_task.topic_id
         return note
@@ -51,8 +39,6 @@ module Project
 
       def handle_modified
         messages = []
-        puts params[:note][:modified]
-        @projects_task.update(task_params)
          if params[:note][:modified] == "begin"
            puts "begin"
            messages += @projects_task.set_begin(params[:note][:begin],false)
@@ -71,7 +57,6 @@ module Project
            puts "syncing dependers"
            messages += @projects_task.sync_dependers
          end
-         messages << {message_type:"test", message: "TEST#{@projects_task.topic_id} "}
          puts messages
          @messages = {}
          messages.each{ |m|
