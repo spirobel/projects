@@ -240,7 +240,24 @@ class ProjectsTask < ActiveRecord::Base
       self.messages += sdc_errors
     end
 
-
+    def change_messages(old_begin,old_duration,old_end)
+      puts old_begin.inspect
+      puts self.begin.inspect
+      m = message_base()
+      if(old_begin != self.begin)
+        ret = m.merge({message_type: "changes", message:"begin #{old_begin} to #{self.begin}"})
+        self.messages << ret
+      end
+      if(old_duration != self.duration)
+        ret = m.merge({message_type: "changes", message:"duration #{old_duration} to #{self.duration}"})
+        self.messages << ret
+      end
+      if(old_end != self.end)
+        ret = m.merge({message_type: "changes", message:"end #{old_end} to #{self.end}"})
+        self.messages << ret
+      end
+      return self.messages
+    end
 
     def error_duration_bz
       m = message_base()

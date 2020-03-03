@@ -2,6 +2,9 @@ module Project
   class NotesController < ApplicationController
     def update
       @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first unless params[:topic_id] == "drycreate"
+      @old_begin = @projects_task.begin
+      @old_duration = @projects_task.duration
+      @old_end = @projects_task.end
       ActiveRecord::Base.transaction do
         if !@projects_task
           @projects_task = ProjectsTask.create(task_params)
@@ -71,11 +74,12 @@ module Project
            puts "syncing dependers"
            messages += @projects_task.sync_dependers
          else
-           #we have to call sync_dependees on the earliest starting depender 
+           #we have to call sync_dependees on the earliest starting depender
            earliest_starting_depender = @projects_task.dependers.select{ |x| !x.begin.nil?}.sort_by{|x| x.begin }[0]
            @projects_task.set_end(earliest_starting_depender.begin,true) unless earliest_starting_depender.nil?
            @projects_task.save
          end
+         messages += @projects_task.change_messages(@old_begin,@old_duration,@old_end) unless params[:topic_id] == "drycreate"
          puts messages
          @messages = {}
          messages.each{ |m|
