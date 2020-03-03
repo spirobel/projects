@@ -6,10 +6,6 @@ import { bed_block_format } from '../discourse/lib/utils'
 import { once } from "@ember/runloop";
 function initializeComposer(api) {
   //DRAFT
-  api.onAppEvent('composer:opened', function(){
-    console.log("appevent")
-console.log(this)
-     });
   //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
@@ -35,8 +31,6 @@ console.log(this)
         }
         this.set('projects_task',draft_projects_task)
         }
-        console.log('INIT')
-        console.log(this)
       //shoot dry on composer open to display messages
       this.set('projects_task.dry', true );
       this.save_projects_task()
@@ -44,6 +38,7 @@ console.log(this)
     },
     @observes('composerOpened')
     composeinit(){
+      if(this.composerOpened == null) return;
       once(this, "setupProjectsTask")
     },
     //https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/models/composer.js.es6#L1165
