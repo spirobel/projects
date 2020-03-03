@@ -125,7 +125,7 @@ class ProjectsTask < ActiveRecord::Base
           self.messages += self.sync_dependers
         end
       end
-      self.change_messages(old_begin,old_duration,old_end) unless self.topic_id == "drycreate"
+      self.change_messages(old_begin,old_duration,old_end) unless self.topic.nil? || self.topic_id == "drycreate"
       self.save
       return self.messages
     end
@@ -161,7 +161,7 @@ class ProjectsTask < ActiveRecord::Base
           self.messages += self.sync_dependees
         end
       end
-      self.change_messages(old_begin,old_duration,old_end) unless self.topic_id == "drycreate"
+      self.change_messages(old_begin,old_duration,old_end) unless self.topic.nil? || self.topic_id == "drycreate"
       self.save
       return self.messages
     end
@@ -190,7 +190,8 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def message_base
-      unless self.topic_id == "drycreate"
+      unless self.topic.nil? || self.topic_id == "drycreate"
+        puts topic_id, self.topic_id
         t = Topic.find(topic_id)
         return {url:t.url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
 

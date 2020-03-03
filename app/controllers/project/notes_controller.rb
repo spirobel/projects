@@ -2,13 +2,15 @@ module Project
   class NotesController < ApplicationController
     def update
       @projects_task = ProjectsTask.where(["topic_id = ?",params[:topic_id]]).first unless params[:topic_id] == "drycreate"
-      @old_begin = @projects_task.begin
-      @old_duration = @projects_task.duration
-      @old_end = @projects_task.end
       ActiveRecord::Base.transaction do
         if !@projects_task
           @projects_task = ProjectsTask.create(task_params)
           @projects_task.topic = Topic.find(params[:topic_id]) unless params[:topic_id] == "drycreate"
+        end
+        unless params[:topic_id] == "drycreate"
+          @old_begin = @projects_task.begin
+          @old_duration = @projects_task.duration
+          @old_end = @projects_task.end
         end
         guardian = Guardian.new(current_user)
         guardian.ensure_can_edit_topic!(@projects_task.topic) unless params[:topic_id] == "drycreate"
