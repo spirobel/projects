@@ -94,6 +94,9 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def set_begin(new_begin, autoset)
+      old_begin = self.begin
+      old_duration = self.duration
+      old_end = self.end
       puts "set_begin on #{topic_id} with #{autoset}"
       return self.x_is_locked("warning") if autoset && locked == "begin"
       self.begin = new_begin
@@ -122,11 +125,15 @@ class ProjectsTask < ActiveRecord::Base
           self.messages += self.sync_dependers
         end
       end
+      self.change_messages(old_begin,old_duration,old_end) unless self.topic_id == "drycreate"
       self.save
       return self.messages
     end
 
     def set_end(new_end, autoset)
+      old_begin = self.begin
+      old_duration = self.duration
+      old_end = self.end
       puts "set_end on #{topic_id}with #{autoset}"
       return self.x_is_locked("warning") if autoset && locked == "end"
       self.end = new_end
@@ -154,6 +161,7 @@ class ProjectsTask < ActiveRecord::Base
           self.messages += self.sync_dependees
         end
       end
+      self.change_messages(old_begin,old_duration,old_end) unless self.topic_id == "drycreate"
       self.save
       return self.messages
     end
