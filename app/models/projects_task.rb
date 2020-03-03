@@ -91,7 +91,7 @@ class ProjectsTask < ActiveRecord::Base
       self.begin = new_begin
       if new_begin == ""
         #we have to call sync_dependers on the latest ending dependee after setting dependee.messages = self.messages
-        latest_ending_dependee = self.dependees.sort_by{|x| x.end }.reverse[0]
+        latest_ending_dependee = self.dependees.select{ |x| !x.end.nil?}.sort_by{|x| x.end }.reverse[0]
         self.set_begin(latest_ending_dependee.end,true) unless latest_ending_dependee.nil?
         self.save
         return self.messages
@@ -124,7 +124,7 @@ class ProjectsTask < ActiveRecord::Base
       self.end = new_end
       if new_end == ""
         #we have to call sync_dependees on the earliest starting depender after setting depender.messages = self.messages
-        earliest_starting_depender = self.dependers.sort_by{|x| x.begin }[0]
+        earliest_starting_depender = self.dependers.select{ |x| !x.begin.nil?}.sort_by{|x| x.begin }[0]
         self.set_end(earliest_starting_depender.begin,true) unless earliest_starting_depender.nil?
         self.save
         return self.messages
