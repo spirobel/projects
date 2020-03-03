@@ -10,6 +10,8 @@ module Project
           @projects_task = ProjectsTask.create(task_params)
           @projects_task.topic = Topic.find(params[:topic_id]) unless params[:topic_id] == "drycreate"
         end
+        guardian = Guardian.new(current_user)
+        guardian.ensure_can_edit_topic!(@projects_task.topic) unless params[:topic_id] == "drycreate"
         @projects_task.update(task_params)
         @projects_task.handle_deps(params[:note][:dry],
           params[:note][:depon],
