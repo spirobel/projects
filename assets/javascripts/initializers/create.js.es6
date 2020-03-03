@@ -44,7 +44,6 @@ console.log(this)
     },
     @observes('composerOpened')
     composeinit(){
-      if (this._state === 'destroying') return;
       once(this, "setupProjectsTask")
     },
     //https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/models/composer.js.es6#L1165
