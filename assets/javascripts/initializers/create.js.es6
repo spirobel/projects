@@ -3,11 +3,50 @@ import { default as computed, observes, on } from 'ember-addons/ember-computed-d
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 import { bed_block_format } from '../discourse/lib/utils'
+import { once } from "@ember/runloop";
 function initializeComposer(api) {
   //DRAFT
+  api.onAppEvent('composer:opened', function(){
+    console.log("appevent")
+console.log(this)
+     });
   //TODO on composer open also fire dry to get messages
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
+    setupProjectsTask(){
+      //no draft
+      if(!this.projects_task){
+        let draft_projects_task = {}
+        if(!this.topic) { //CREATE
+          draft_projects_task.id = "drycreate"
+          draft_projects_task.dry = true
+          draft_projects_task.locked = "duration"
+          draft_projects_task.begin = ""
+          draft_projects_task.duration = ""
+          draft_projects_task.end = ""
+          draft_projects_task.modified = "duration"
+          draft_projects_task.depon = []
+          draft_projects_task.depby = []
+          draft_projects_task.categoryId = this.categoryId
+
+        } else { //EDIT
+          draft_projects_task = Object.assign({}, this.topic.projects_task);
+          draft_projects_task.id = this.topic.id;
+        }
+        this.set('projects_task',draft_projects_task)
+        }
+        console.log('INIT')
+        console.log(this)
+      //shoot dry on composer open to display messages
+      this.set('projects_task.dry', true );
+      this.save_projects_task()
+
+    },
+    @observes('composerOpened')
+    composeinit(){
+      if (this._state === 'destroying') return;
+      once(this, "setupProjectsTask")
+    },
     //https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/models/composer.js.es6#L1165
     @observes('projects_task.begin',
               'projects_task.end',

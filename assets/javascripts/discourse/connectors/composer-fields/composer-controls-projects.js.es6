@@ -11,30 +11,6 @@ export default {
         "end"
       ],
     });
-    //no draft
-if(!this.model.projects_task){
-  let draft_projects_task = {}
-  if(!this.model.topic) { //CREATE
-    draft_projects_task.id = "drycreate"
-    draft_projects_task.dry = true
-    draft_projects_task.locked = "duration"
-    draft_projects_task.begin = ""
-    draft_projects_task.duration = ""
-    draft_projects_task.end = ""
-    draft_projects_task.modified = "duration"
-    draft_projects_task.depon = []
-    draft_projects_task.depby = []
-    draft_projects_task.categoryId = this.model.categoryId
-
-  } else { //EDIT
-    draft_projects_task = Object.assign({}, this.model.topic.projects_task);
-    draft_projects_task.id = this.model.topic.id;
-  }
-  this.model.set('projects_task',draft_projects_task)
-  }
-//shoot dry on composer open to display messages
-this.model.set('projects_task.dry', true );
-this.model.save_projects_task()
 },
   actions: {
    lockedChange(name){
