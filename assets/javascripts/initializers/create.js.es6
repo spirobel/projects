@@ -4,6 +4,7 @@ import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
 import { bed_block_format } from '../discourse/lib/utils'
 import { once } from "@ember/runloop";
+import Category from "discourse/models/category";
 function initializeComposer(api) {
   //DRAFT
   //TODO on composer open also fire dry to get messages
@@ -115,6 +116,15 @@ function initializeComposer(api) {
              {extraClass: "custom-body",templateName: "custom-body", body});
             return
           }
+//https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/routes/application.js.es6#L190
+          Category.reloadById(this.topic.category.id).then(atts => {
+                 const model = this.store.createRecord("category", atts.category);
+                 model.setupGroupsAndPermissions();
+                 this.site.updateCategory(model);
+                 //probably this breaks category edit
+                 //this.controllerFor("edit-category").set("selectedTab", "general");
+          });
+
           this.set("projects_task", result);
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
