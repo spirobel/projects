@@ -77,7 +77,7 @@ function initializeTopic(api) {
     @computed('projects_task.begin')
     projectsTaskBeginPretty(begin) {
       if(!begin)return;
-      let icon = iconHTML('play');
+      let icon = iconHTML('step-backward');
       return Ember.String.htmlSafe(""+icon+moment(begin).format("D.M.Y, h:mm a"));
     },
     @computed('projects_task.end')
