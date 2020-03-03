@@ -65,7 +65,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependers
       if self.messages.none? {|m| m.has_key? :sdc}
       self.dependers.each{|d|
-          if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin > self.end)
+          if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin >= self.end)
             return self.messages += d.begin_locked_and_early
           end
           self.messages += d.set_begin(self.end,true)
@@ -76,7 +76,7 @@ class ProjectsTask < ActiveRecord::Base
     def sync_dependees
       if self.messages.none? {|m| m.has_key? :sdc}
       self.dependees.each{|d|
-          if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end < self.begin)
+          if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end <= self.begin)
             return self.messages += d.end_locked_and_late
           end
           self.messages += d.set_end(self.begin,true)
@@ -90,6 +90,9 @@ class ProjectsTask < ActiveRecord::Base
       return self.x_is_locked("warning") if autoset && locked == "begin"
       self.begin = new_begin
       if new_begin == ""
+        #we have to call sync_dependers on the latest ending dependee after setting dependee.messages = self.messages
+        latest_ending_dependee = self.dependees.sort_by{|x| x.end }.reverse[0]
+        self.set_begin(latest_ending_dependee.end,true) unless latest_ending_dependee.nil?
         self.save
         return self.messages
       end
@@ -120,6 +123,9 @@ class ProjectsTask < ActiveRecord::Base
       return self.x_is_locked("warning") if autoset && locked == "end"
       self.end = new_end
       if new_end == ""
+        #we have to call sync_dependees on the earliest starting depender after setting depender.messages = self.messages
+        earliest_starting_depender = self.dependers.sort_by{|x| x.begin }[0]
+        self.set_end(earliest_starting_depender.begin,true) unless earliest_starting_depender.nil?
         self.save
         return self.messages
       end
