@@ -2,7 +2,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { default as computed, observes, on } from 'ember-addons/ember-computed-decorators';
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
-import { bed_block_format } from '../discourse/lib/utils'
+import { bed_block_format, begin_format,duration_format,end_format } from '../discourse/lib/utils'
 import { once } from "@ember/runloop";
 import Category from "discourse/models/category";
 function initializeComposer(api) {
@@ -97,7 +97,19 @@ function initializeComposer(api) {
              </h4><ul class="pt_messages">`
              messis[i].forEach((m, i) => {
                if(m.message_type == "error"){result.payload.pt_error = true}
-               mhtml+=`<li class="${m.message_type}">${m.message}</li>`
+               if(m.message_type != "changes"){mhtml+=`<li class="${m.message_type}">${m.message}</li>`}
+               else{
+                 let message =""
+                 if(m.begin_from){
+                   message = m.begin_to?`will change begin from <b>${begin_format(m.begin_from)}</b> to <b>${begin_format(m.begin_to)}</b>`:''
+                 }
+                 if(m.end_from){
+                   message = m.end_to?`will change end from <b>${end_format(m.end_from)}</b> to <b>${end_format(m.end_to)}</b>`:''
+                 }
+                 if(m.duration_from){
+                   message = m.duration_to?`will change duration from <b>${duration_format(m.duration_from)}</b> to <b>${duration_format(m.duration_to)}</b>`:''
+                 }
+                 mhtml+=`<li class="${m.message_type}">${message}</li>`}
              });
              mhtml +="</ul></div>"
            });

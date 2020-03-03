@@ -253,15 +253,18 @@ class ProjectsTask < ActiveRecord::Base
       puts self.begin.inspect
       m = message_base()
       if(old_begin != self.begin)
-        ret = m.merge({message_type: "changes", message:"begin #{old_begin} to #{self.begin}"})
+        ret = m.merge({message_type: "changes", begin_from: old_begin, begin_to: self.begin,
+           message:"begin #{old_begin} to #{self.begin}"})
         self.messages << ret
       end
       if(old_duration != self.duration)
-        ret = m.merge({message_type: "changes", message:"duration #{old_duration} to #{self.duration}"})
+        ret = m.merge({message_type: "changes", duration_from: old_duration, duration_to: self.duration,
+           message:"duration #{old_duration} to #{self.duration}"})
         self.messages << ret
       end
       if(old_end != self.end)
-        ret = m.merge({message_type: "changes", message:"end #{old_end} to #{self.end}"})
+        ret = m.merge({message_type: "changes", end_from: old_end, end_to: self.end,
+           message:"end #{old_end} to #{self.end}"})
         self.messages << ret
       end
       return self.messages
