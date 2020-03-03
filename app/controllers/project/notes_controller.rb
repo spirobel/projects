@@ -52,10 +52,20 @@ module Project
          unless !@projects_task.begin
            puts "syncing dependees"
            messages += @projects_task.sync_dependees
+         else
+           #we have to call sync_dependers on the latest ending dependee
+           latest_ending_dependee = @projects_task.dependees.select{ |x| !x.end.nil?}.sort_by{|x| x.end }.reverse[0]
+           @projects_task.set_begin(latest_ending_dependee.end,true) unless latest_ending_dependee.nil?
+           @projects_task.save
          end
          unless !@projects_task.end
            puts "syncing dependers"
            messages += @projects_task.sync_dependers
+         else
+           #we have to call sync_dependees on the earliest starting depender 
+           earliest_starting_depender = @projects_task.dependers.select{ |x| !x.begin.nil?}.sort_by{|x| x.begin }[0]
+           @projects_task.set_end(earliest_starting_depender.begin,true) unless earliest_starting_depender.nil?
+           @projects_task.save
          end
          puts messages
          @messages = {}
