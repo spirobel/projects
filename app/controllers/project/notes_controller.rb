@@ -15,10 +15,19 @@ module Project
         handle_modified()
         raise ActiveRecord::Rollback if params[:note][:dry] == "true"
       end
+      recalc_longest_duration unless params[:note][:dry] == "true"
       render json: { note: return_note }
     end
 
     private
+      def recalc_longest_duration
+        catid = Topic.find(@projects_task.topic_id).category_id
+        times = []
+        ProjectsTask.where.not(id: ProjectsDependency.select(:depender_id)).each{|pt|times << pt.calculate_total_time}
+        store = PluginStore.new("Project")
+        store.set(catid, times.max)
+      end
+
       def return_note
         note = {
           'id' => @projects_task.topic_id,

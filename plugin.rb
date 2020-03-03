@@ -29,7 +29,8 @@ after_initialize do
   [
     "projects_enabled",
     "earliest_begin",
-    "latest_end"
+    "latest_end",
+    "longest_duration"
   ].each do |key|
     Site.preloaded_category_custom_fields << key if Site.respond_to? :preloaded_category_custom_fields
     add_to_serializer(:basic_category, key.to_sym) { object.send(key) }
@@ -37,6 +38,7 @@ after_initialize do
   class ::Category
     attribute :earliest_begin
     attribute :latest_end
+    attribute :longest_duration
     def projects_enabled
       if self.custom_fields['projects_enabled'] != nil
         self.custom_fields['projects_enabled']
@@ -55,7 +57,6 @@ after_initialize do
     end
     def longest_duration
       store = PluginStore.new(PLUGIN_NAME)
-      store.set(self.id, "bla")
       store.get(self.id)
     end
   end

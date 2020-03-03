@@ -37,6 +37,14 @@ class ProjectsTask < ActiveRecord::Base
       Topic.find(depby)
     end
 
+    def calculate_total_time
+      total_time =0
+      self.dependers.each{|d|
+        total_time += d.calculate_total_time
+      }
+      return total_time +=  self.duration.nil? ? 0 : self.duration
+    end
+
     def all_dependers
       deps =[]
       self.dependers.each{|d|
