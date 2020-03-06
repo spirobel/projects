@@ -15,9 +15,9 @@ class ProjectsTask < ActiveRecord::Base
 
 
     def recalc_longest_duration(catid=nil)
-      catid = Topic.find(self.topic_id).category_id unless !catid.nil?
+      catid = self.topic.category_id unless !catid.nil?
       times = []
-      ProjectsTask.where.not(id: ProjectsDependency.select(:depender_id)).each{|pt|times << pt.calculate_total_time}
+      ProjectsTask.joins(:topic).where('topics.category_id' => catid).where.not(id: ProjectsDependency.select(:depender_id)).each{|pt|times << pt.calculate_total_time}
       store = PluginStore.new("Project")
       store.set(catid, times.max)
     end
