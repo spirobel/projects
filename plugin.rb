@@ -81,14 +81,9 @@ end
 
 Rails.logger.level = 0
   Topic.class_eval do
-    has_one :projects_task, dependent: :destroy, :inverse_of => :topic
-
-    after_save do
-      puts 'topic saved'
-      #byebug
-    end
+    has_one :projects_task, dependent: :delete, :inverse_of => :topic
   end
   Post.class_eval do
-    has_one :projects_task, through: :topic
+    has_one :projects_task, through: :topic, dependent: :delete
   end
 end
