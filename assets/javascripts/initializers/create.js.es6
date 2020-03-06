@@ -142,15 +142,15 @@ function initializeComposer(api) {
             return
           }
 //https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/routes/application.js.es6#L190
-          if(this.topic){
-          Category.reloadById(this.topic.category.id).then(atts => {
+
+          Category.reloadById(this.categoryId).then(atts => {
                  const model = this.store.createRecord("category", atts.category);
                  model.setupGroupsAndPermissions();
                  this.site.updateCategory(model);
                  //probably this breaks category edit
                  //this.controllerFor("edit-category").set("selectedTab", "general");
           });
-          }
+          
           this.set("projects_task", result);
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
