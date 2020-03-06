@@ -74,12 +74,14 @@ class ProjectsTask < ActiveRecord::Base
       ActiveRecord::Base.transaction(requires_new: true) do
         self.dependees=ProjectsTask.where(topic_id: depon).where.not(topic_id: nil, id: self.id)
         self.dependers=ProjectsTask.where(topic_id: depby).where.not(topic_id: nil, id: self.id)
-        self.check_sub_circdep(catid)
+        self.check_circdep(catid)
+        self.check_sub_dep if self.messages.none? {|m| m.has_key? :sdc}
         raise ActiveRecord::Rollback if dry == "true"
       end
     end
 
     def sync_dependers
+      self.check_sub_dep if self.messages.none? {|m| m.has_key? :sdc}
       if self.messages.none? {|m| m.has_key? :sdc}
       self.dependers.each{|d|
           if(d.locked == "begin" || d.disallow) && d.begin && self.end && !(d.begin >= self.end)
@@ -91,6 +93,7 @@ class ProjectsTask < ActiveRecord::Base
       return self.messages
     end
     def sync_dependees
+      self.check_sub_dep if self.messages.none? {|m| m.has_key? :sdc}
       if self.messages.none? {|m| m.has_key? :sdc}
       self.dependees.each{|d|
           if(d.locked == "end" || d.disallow) && d.end && self.begin && !(d.end <= self.begin)
@@ -206,7 +209,7 @@ class ProjectsTask < ActiveRecord::Base
       end
     end
 
-    def check_sub_circdep(catid)
+    def check_circdep(catid)
       #has to run in any case and sync deps should not be run if there is an error
       sdc_errors = []
 
@@ -231,6 +234,10 @@ class ProjectsTask < ActiveRecord::Base
         self.messages += sdc_errors
         return
       end
+    end
+
+    def check_sub_dep
+      sdc_errors = []
 
       #check subdependees
       dependee_list = self.all_dependees
@@ -247,10 +254,11 @@ class ProjectsTask < ActiveRecord::Base
 
       sub_dee_dups += sub_der_dups
       sub_dee_dups.each{|d|
+        sef = Topic.find(self.topic_id)
         t = Topic.find(d)
-        sdc_errors << {message_type:"error",sdc: true, url:t.url, title: t.title, begin: t.projects_task.begin,
-        end: t.projects_task.end, duration: t.projects_task.duration,
-                message: I18n.t("pt_errors.sub_dep")}
+        sdc_errors << {message_type:"error",sdc: true, url:sef.url, title: sef.title, begin: sef.projects_task.begin,
+        end: sef.projects_task.end, duration: sef.projects_task.duration,
+                message: I18n.t("pt_errors.sub_dep",x: t.title)}
       }
       self.messages += sdc_errors
     end

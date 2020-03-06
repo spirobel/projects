@@ -83,6 +83,7 @@ module Project
          @messages.each{|k,t|
            t.uniq! {|m| m[:message]}
          }
+         puts @messages.inspect
          raise ActiveRecord::Rollback unless messages.select { |k| k[:message_type] == "error" }.empty?
       end
       def task_params
