@@ -78,7 +78,9 @@ after_initialize do
   get "topics_array" => "list#topics_array",as: "topics_array",  defaults: { format: :json }
 end
 end
-
+ DiscourseEvent.on(:post_destroyed) do |post, opts, user|
+   ProjectsTask.where(["topic_id = ?",post.topic.id]).first.destroy
+ end
 Rails.logger.level = 0
   Topic.class_eval do
     has_one :projects_task, dependent: :delete, :inverse_of => :topic
