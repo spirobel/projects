@@ -242,6 +242,9 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def check_sub_dep
+      m = message_base()
+      m.merge!({message_type:"error", message: I18n.t("pt_errors.duration_below_zero")})
+      return [m]
       sdc_errors = []
 
       #check subdependees
@@ -259,18 +262,14 @@ class ProjectsTask < ActiveRecord::Base
 
       sub_dee_dups
       sub_dee_dups.each{|d|
-        sef = Topic.find(self.topic_id)
         t = Topic.find(d)
-        sdc_errors << {message_type:"error",sdc: true, url:sef.url, title: sef.title, begin: sef.projects_task.begin,
-        end: sef.projects_task.end, duration: sef.projects_task.duration,
-                message: I18n.t("pt_errors.sub_dee",x: t.title)}
+        sdc_errors << m.merge({message_type:"error",sdc: true,
+                message: I18n.t("pt_errors.sub_dee",x: t.title)})
       }
       sub_der_dups.each{|d|
-        sef = Topic.find(self.topic_id)
         t = Topic.find(d)
-        sdc_errors << {message_type:"error",sdc: true, url:sef.url, title: sef.title, begin: sef.projects_task.begin,
-        end: sef.projects_task.end, duration: sef.projects_task.duration,
-                message: I18n.t("pt_errors.sub_der",x: t.title)}
+        sdc_errors << m.merge({message_type:"error",sdc: true,
+                message: I18n.t("pt_errors.sub_der",x: t.title)})
       }
       self.messages += sdc_errors
     end
