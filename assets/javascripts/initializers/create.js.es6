@@ -2,6 +2,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { default as computed, observes, on } from 'ember-addons/ember-computed-decorators';
 import Composer from 'discourse/models/composer';
 import { debounce } from "@ember/runloop";
+import { later } from "@ember/runloop";
 import { bed_block_format, begin_format,duration_format,end_format } from '../discourse/lib/utils'
 import { once } from "@ember/runloop";
 import Category from "discourse/models/category";
