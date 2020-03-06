@@ -6,9 +6,9 @@ export default {
   setupComponent(attrs, component) {
     this.setProperties({
       dropdowncontent:[
-        "duration",
-        "begin",
-        "end"
+      {name:"duration", id: "duration"},
+      {name:"begin", id: "begin"},
+      {name:"end", id: "end"}
       ],
     });
 },
