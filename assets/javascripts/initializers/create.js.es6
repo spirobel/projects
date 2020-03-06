@@ -101,13 +101,13 @@ function initializeComposer(api) {
                else{
                  let message =""
                  if(m.begin_from){
-                   message = m.begin_to?`will change begin from <b>${begin_format(m.begin_from)}</b> to <b>${begin_format(m.begin_to)}</b>`:''
+                   message = m.begin_to?`will change begin from <b>${begin_format(m.begin_from)}</b> to <b>${begin_format(m.begin_to)}</b>`:'will unset begin'
                  }
                  if(m.end_from){
-                   message = m.end_to?`will change end from <b>${end_format(m.end_from)}</b> to <b>${end_format(m.end_to)}</b>`:''
+                   message = m.end_to?`will change end from <b>${end_format(m.end_from)}</b> to <b>${end_format(m.end_to)}</b>`:'will unset end'
                  }
                  if(m.duration_from){
-                   message = m.duration_to?`will change duration from <b>${duration_format(m.duration_from)}</b> to <b>${duration_format(m.duration_to)}</b>`:''
+                   message = m.duration_to?`will change duration from <b>${duration_format(m.duration_from)}</b> to <b>${duration_format(m.duration_to)}</b>`:'will unset duration'
                  }
                  mhtml+=`<li class="${m.message_type}">${message}</li>`}
              });
