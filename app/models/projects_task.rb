@@ -13,6 +13,15 @@ class ProjectsTask < ActiveRecord::Base
     #attribute :test this adds it to serializers
     attr_writer :messages
 
+
+    def recalc_longest_duration(catid=nil)
+      catid = Topic.find(self.topic_id).category_id unless !catid.nil?
+      times = []
+      ProjectsTask.where.not(id: ProjectsDependency.select(:depender_id)).each{|pt|times << pt.calculate_total_time}
+      store = PluginStore.new("Project")
+      store.set(catid, times.max)
+    end
+
     def messages
       @messages ||= []
     end

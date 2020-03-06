@@ -78,8 +78,12 @@ after_initialize do
   get "topics_array" => "list#topics_array",as: "topics_array",  defaults: { format: :json }
 end
 end
- DiscourseEvent.on(:post_destroyed) do |post, opts, user|
-   ProjectsTask.where(["topic_id = ?",post.topic.id]).first.destroy
+ DiscourseEvent.on(:topic_destroyed) do |topic, user|
+   pt = ProjectsTask.where(["topic_id = ?",topic.id]).first
+   unless pt.nil?
+     pt.destroy
+     pt.recalc_longest_duration(topic.category_id)
+   end
  end
 Rails.logger.level = 0
   Topic.class_eval do
