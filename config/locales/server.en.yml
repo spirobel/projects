@@ -6,5 +6,6 @@ en:
     x_locked: "%{x} is locked and therefore not set"
     locked_late: "end date is locked and later than the desired beginning date of this task!"
     locked_early: "begin date is locked and earlier than the desired end date of this task!"
-    sub_dep: "this task has a subdependecy called: %{x} please remove it."
+    sub_dee: "this task has a subdependecy called: %{x} please remove it."
+    sub_der: "this task is a subdependecy of: %{x} please make sure thats not the case."
     circ_dep: "this task is part of of a circular dependency chain. Please make sure there are no circular dependencies!"

@@ -252,13 +252,20 @@ class ProjectsTask < ActiveRecord::Base
       der_dups += self.depby
       sub_der_dups = der_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
 
-      sub_dee_dups += sub_der_dups
+      sub_dee_dups
       sub_dee_dups.each{|d|
         sef = Topic.find(self.topic_id)
         t = Topic.find(d)
         sdc_errors << {message_type:"error",sdc: true, url:sef.url, title: sef.title, begin: sef.projects_task.begin,
         end: sef.projects_task.end, duration: sef.projects_task.duration,
-                message: I18n.t("pt_errors.sub_dep",x: t.title)}
+                message: I18n.t("pt_errors.sub_dee",x: t.title)}
+      }
+      sub_der_dups.each{|d|
+        sef = Topic.find(self.topic_id)
+        t = Topic.find(d)
+        sdc_errors << {message_type:"error",sdc: true, url:sef.url, title: sef.title, begin: sef.projects_task.begin,
+        end: sef.projects_task.end, duration: sef.projects_task.duration,
+                message: I18n.t("pt_errors.sub_der",x: t.title)}
       }
       self.messages += sdc_errors
     end
