@@ -1,8 +1,8 @@
 {{#d-modal-body title=label class="poll-ui-builder"}}
   <form class="poll-ui-builder-form form-horizontal">
     <div class="options">
-        <div class="input-group poll-date">
-          {{date-picker-future value=date containerId="date-container"}}
+        <div class="poll-date">
+          {{date-picker-future value=date containerId="date-container" onSelect=(action (mut date))}}
           {{input type="time" value=time}}
           <div id="date-container"></div>
         </div>
