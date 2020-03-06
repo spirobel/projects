@@ -12,6 +12,7 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
     setupProjectsTask(){
+      if(!this.category.projects_enabled){return;}
       //no draft
       if(!this.projects_task){
         let draft_projects_task = {}
@@ -165,6 +166,7 @@ function initializeComposer(api) {
 //we can work with this: second arg gives us begin,time pr_t_att etc
 //          this.appEvents.trigger("topic:created", createdPost, composer);
   api.onAppEvent('topic:created', function(createdPost,composer){
+    if(!composer.category.projects_enabled){return;}
        composer.projects_task.id = createdPost.topic_id;
        composer.projects_task.dry=false;
        composer.save_projects_task();
@@ -174,6 +176,7 @@ function initializeComposer(api) {
 //also:this.action: "edit" and this.topic.id
 //topic.currentPost: 1
  api.composerBeforeSave(async function() {
+   if(!this.category.projects_enabled){return Promise.resolve();}
    if (this.action == 'edit') {
      this.set('projects_task.id',this.topic.id);
      this.set('projects_task.dry',false);

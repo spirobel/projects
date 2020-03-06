@@ -1,3 +1,4 @@
+{{#if model.category.projects_enabled}}
 {{#if model.topicFirstPost}}
 <div class="add-task-button-container">
   {{projects-datetime-picker label="begin" datetime=model.projects_task.begin submit=(action "begin") closed=model.closed locked=model.projects_task.locked}}
@@ -16,4 +17,5 @@
     icon="lock"}}
 </div>
 </div>
+{{/if}}
 {{/if}}
