@@ -156,6 +156,7 @@ function initializeComposer(api) {
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
           if(!this.projects_task.end){this.set("projects_task.end",  "") }
+          this.appEvents.trigger("post-stream:refresh");
           return result.pt_error
       },
 
