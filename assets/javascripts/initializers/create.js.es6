@@ -150,7 +150,7 @@ function initializeComposer(api) {
                  //probably this breaks category edit
                  //this.controllerFor("edit-category").set("selectedTab", "general");
           });
-          
+
           this.set("projects_task", result);
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
@@ -165,10 +165,8 @@ function initializeComposer(api) {
 //we can work with this: second arg gives us begin,time pr_t_att etc
 //          this.appEvents.trigger("topic:created", createdPost, composer);
   api.onAppEvent('topic:created', function(createdPost,composer){
-       console.log('a topic was created');
        composer.projects_task.id = createdPost.topic_id;
        composer.projects_task.dry=false;
-       console.log(composer);
        composer.save_projects_task();
      });
 //UPDATE
@@ -176,7 +174,6 @@ function initializeComposer(api) {
 //also:this.action: "edit" and this.topic.id
 //topic.currentPost: 1
  api.composerBeforeSave(async function() {
-   console.log("Before saving, do something!");
    if (this.action == 'edit') {
      this.set('projects_task.id',this.topic.id);
      this.set('projects_task.dry',false);

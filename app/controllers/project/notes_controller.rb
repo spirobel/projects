@@ -50,17 +50,13 @@ module Project
       def handle_modified
         messages = []
          if params[:note][:modified] == "begin"
-           puts "begin"
            messages += @projects_task.set_begin(params[:note][:begin],false)
          elsif  params[:note][:modified] == "duration"
-           puts "duration"
            messages += @projects_task.set_duration(params[:note][:duration])
          elsif params[:note][:modified] == "end"
-           puts "end"
            messages += @projects_task.set_end(params[:note][:end],false)
          end
          unless !@projects_task.begin
-           puts "syncing dependees"
            messages += @projects_task.sync_dependees
          else
            #we have to call sync_dependers on the latest ending dependee
@@ -69,7 +65,6 @@ module Project
            @projects_task.save
          end
          unless !@projects_task.end
-           puts "syncing dependers"
            messages += @projects_task.sync_dependers
          else
            #we have to call sync_dependees on the earliest starting depender
@@ -78,7 +73,6 @@ module Project
            @projects_task.save
          end
          messages += @projects_task.change_messages(@old_begin,@old_duration,@old_end) unless params[:topic_id] == "drycreate"
-         puts messages
          @messages = {}
          messages.each{ |m|
            unless m[:url].nil?

@@ -106,7 +106,6 @@ class ProjectsTask < ActiveRecord::Base
       old_begin = self.begin
       old_duration = self.duration
       old_end = self.end
-      puts "set_begin on #{topic_id} with #{autoset}"
       return self.x_is_locked("warning") if autoset && locked == "begin"
       self.begin = new_begin
       if new_begin == ""
@@ -143,7 +142,6 @@ class ProjectsTask < ActiveRecord::Base
       old_begin = self.begin
       old_duration = self.duration
       old_end = self.end
-      puts "set_end on #{topic_id}with #{autoset}"
       return self.x_is_locked("warning") if autoset && locked == "end"
       self.end = new_end
       if new_end == ""
@@ -200,7 +198,6 @@ class ProjectsTask < ActiveRecord::Base
 
     def message_base
       unless self.topic.nil? || self.topic_id == "drycreate"
-        puts topic_id, self.topic_id
         t = Topic.find(topic_id)
         return {url:t.url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
 
@@ -259,8 +256,6 @@ class ProjectsTask < ActiveRecord::Base
     end
 
     def change_messages(old_begin,old_duration,old_end)
-      puts old_begin.inspect
-      puts self.begin.inspect
       m = message_base()
       if(old_begin != self.begin)
         ret = m.merge({message_type: "changes", begin_from: old_begin, begin_to: self.begin,
