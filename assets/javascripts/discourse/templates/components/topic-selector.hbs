@@ -4,7 +4,7 @@
       <input type='radio'  {{action "unselectTopic" t}}>
       {{topic-status topic=t}}
       <span class="topic-title">
-        {{t.title}}
+        {{t.title}} {{t.projectsTaskBeginPretty}} {{t.projectsTaskDurationPretty}} {{t.projectsTaskEndPretty}}
       </span>
     </label>
   </div>
@@ -26,7 +26,7 @@
           <input type='radio'  {{action "chooseTopic" t}}>
           {{raw "topic-status" topic=t}}
           <span class="topic-title">
-            {{t.title}} 
+            {{t.title}} {{t.projectsTaskBeginPretty}} {{t.projectsTaskDurationPretty}} {{t.projectsTaskEndPretty}}
           </span>
         </label>
       </div>
