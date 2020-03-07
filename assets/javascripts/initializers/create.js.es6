@@ -134,6 +134,9 @@ function initializeComposer(api) {
                 templateName: "custom-body",
                 body
               });
+              result.target.appEvents.trigger("post-stream:refresh", {
+                  id: parseInt(result.responseJson.id, 10)
+                });
               return result.payload
           }).catch(console.error);
           if(!result){
@@ -156,7 +159,6 @@ function initializeComposer(api) {
           if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
           if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
           if(!this.projects_task.end){this.set("projects_task.end",  "") }
-          this.appEvents.trigger("post-stream:refresh");
           return result.pt_error
       },
 
