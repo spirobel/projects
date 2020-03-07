@@ -78,9 +78,31 @@ after_initialize do
   get "topics_array" => "list#topics_array",as: "topics_array",  defaults: { format: :json }
 end
 end
+#    DiscourseEvent.trigger(:topic_recovered, self)
+DiscourseEvent.on(:topic_recovered) do |topic|
+
+  store = PluginStore.new("Project")
+  pt = store.get(topic.id)
+  t = ProjectsTask.where(["topic_id = ?",topic.id]).first
+    if !t
+      t = ProjectsTask.create({topic_id: topic.id})
+    end
+  t.update({
+                                       begin: pt[:begin],
+                                       end: pt[:end],
+                                       duration: pt[:duration],
+                                       locked: pt[:locked],
+                                       disallow: pt[:disallow]})
+  t.handle_deps(false,pt[:depon],pt[:depby],topic.category_id)
+  t.save
+  t.recalc_longest_duration(topic.category_id)
+
+end
+
  DiscourseEvent.on(:topic_destroyed) do |topic, user|
    pt = ProjectsTask.where(["topic_id = ?",topic.id]).first
    unless pt.nil?
+     pt.save_for_deletion
      pt.destroy
      pt.recalc_longest_duration(topic.category_id)
    end

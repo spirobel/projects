@@ -13,7 +13,20 @@ class ProjectsTask < ActiveRecord::Base
     #attribute :test this adds it to serializers
     attr_writer :messages
 
-
+    def save_for_deletion
+      note = {
+        'topic_id' => self.topic_id,
+        'begin' => self.begin,
+        'end' => self.end,
+        'duration' => self.duration,
+        'locked' => self.locked,
+        'depon' => self.depon,
+        'depby' => self.depby,
+        'disallow' => self.disallow,
+      }
+      store = PluginStore.new("Project")
+      store.set(self.topic_id, note)
+    end
     def recalc_longest_duration(catid=nil)
       catid = self.topic.category_id unless !catid.nil?
       times = []
