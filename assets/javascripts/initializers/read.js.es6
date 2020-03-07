@@ -89,7 +89,19 @@ function initializeTopic(api) {
         });
 
     },
+    async recover() {
+      if(!this.category.projects_enabled){return this._super(...arguments);}
+       let catid = this.category.id
+        await this._super(...arguments);
+        Category.reloadById(catid).then(atts => {
+               const model = this.store.createRecord("category", atts.category);
+               model.setupGroupsAndPermissions();
+               this.site.updateCategory(model);
+               //probably this breaks category edit
+               //this.controllerFor("edit-category").set("selectedTab", "general");
+        });
 
+    },
 
     @computed('projects_task.begin')
     projectsTaskBeginPretty(begin) {
