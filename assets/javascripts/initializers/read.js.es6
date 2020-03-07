@@ -8,6 +8,8 @@ import { iconNode } from "discourse-common/lib/icon-library";
 import { h } from "virtual-dom";
 import { durationFormat } from '../discourse/lib/utils'
 import { iconHTML } from "discourse-common/lib/icon-library";
+import Category from "discourse/models/category";
+
 function initializeTopic(api) {
   TopicList.reopenClass({
       topics_array(topic_ids) {
@@ -74,6 +76,21 @@ function initializeTopic(api) {
   });
 
   Topic.reopen({
+    async destroy(deleted_by) {
+      if(!this.category.projects_enabled){return this._super(...arguments);}
+       let catid = this.category.id
+        await this._super(...arguments);
+        Category.reloadById(catid).then(atts => {
+               const model = this.store.createRecord("category", atts.category);
+               model.setupGroupsAndPermissions();
+               this.site.updateCategory(model);
+               //probably this breaks category edit
+               //this.controllerFor("edit-category").set("selectedTab", "general");
+        });
+
+    },
+
+
     @computed('projects_task.begin')
     projectsTaskBeginPretty(begin) {
       if(!begin)return;
