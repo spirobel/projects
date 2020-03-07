@@ -21,7 +21,6 @@ class ProjectsTask < ActiveRecord::Base
       .where.not(id: ProjectsDependency.select(:depender_id)).each{|pt|
          times += pt.calculate_total_time(0)
        }
-      puts times.inspect
       store = PluginStore.new("Project")
       store.set(catid, times.max)
     end
@@ -64,14 +63,14 @@ class ProjectsTask < ActiveRecord::Base
       self.dependers.each{|d|
         deps += d.all_dependers
       }
-      return deps << self.topic_id
+      return deps << self.id
     end
     def all_dependees
       deps =[]
       self.dependees.each{|d|
         deps += d.all_dependees
       }
-      return deps << self.topic_id
+      return deps << self.id
     end
 
     def handle_deps(dry, depon, depby, catid)
@@ -243,33 +242,46 @@ class ProjectsTask < ActiveRecord::Base
 
     def check_sub_dep
       m = message_base()
-      m.merge!({message_type:"error", message: I18n.t("pt_errors.duration_below_zero")})
-      return [m]
       sdc_errors = []
 
       #check subdependees
       dependee_list = self.all_dependees
-      dependee_list.select!{|d|d != self.topic_id}
+      dependee_list.select!{|d|d != self.id}
       dee_dups = dependee_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
-      dee_dups += self.depon
+      dee_dups += self.dependees.ids
       sub_dee_dups = dee_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       #check subdependers
       depender_list = self.all_dependers
-      dependee_list.select!{|d|d != self.topic_id}
+      dependee_list.select!{|d|d != self.id}
       der_dups = depender_list.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
-      der_dups += self.depby
+      der_dups += self.dependers.ids
       sub_der_dups = der_dups.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
 
-      sub_dee_dups
       sub_dee_dups.each{|d|
-        t = Topic.find(d)
+        p = ProjectsTask.find(d)
+        unless p.topic_id.nil?
+          t = Topic.find(p.topic_id)
+          url = t.url
+          title = t.title
+        else
+          url = "#"
+          title = "the topic you are editing right now"
+        end
         sdc_errors << m.merge({message_type:"error",sdc: true,
-                message: I18n.t("pt_errors.sub_dee",x: t.title)})
+                message: I18n.t("pt_errors.sub_dee",x: title)})
       }
       sub_der_dups.each{|d|
-        t = Topic.find(d)
+        p = ProjectsTask.find(d)
+        unless p.topic_id.nil?
+          t = Topic.find(p.topic_id)
+          url = t.url
+          title = t.title
+        else
+          url = "#"
+          title = "the topic you are editing right now"
+        end
         sdc_errors << m.merge({message_type:"error",sdc: true,
-                message: I18n.t("pt_errors.sub_der",x: t.title)})
+                message: I18n.t("pt_errors.sub_der",x: title)})
       }
       self.messages += sdc_errors
     end
