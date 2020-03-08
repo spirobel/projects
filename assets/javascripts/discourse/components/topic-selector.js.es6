@@ -80,10 +80,13 @@ export default Component.extend({
 
     searchForTerm(titleWithFilters, searchParams).then(results => {
       if (results && results.posts && results.posts.length > 0) {
+        const store = Discourse.__container__.lookup("service:store");
+        const topicMap = [];
+        results.posts.mapBy("topic").filter(t => t.id !== currentTopicId)
+        .filter(t =>selectedTopics.every(st => t.id !== st.id)).forEach(t => (topicMap.push(store.createRecord("topic", t))));
         this.set(
           "topics",
-          results.posts.mapBy("topic").filter(t => t.id !== currentTopicId)
-          .filter(t =>selectedTopics.every(st => t.id !== st.id))
+          topicMap
         );
       } else {
         this.setProperties({ topics: null, loading: false });
