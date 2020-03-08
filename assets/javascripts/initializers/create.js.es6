@@ -120,9 +120,7 @@ function initializeComposer(api) {
                  else if(m.duration_to){
                    message = `will set duration to <b>${duration_format(m.duration_to)}</b>`
                  }
-                 else {
-                   message = JSON.stringify(m)
-                 }
+
                  mhtml+=`<li class="${m.message_type}">${message}</li>`}
              });
              mhtml +="</ul></div>"
