@@ -141,11 +141,11 @@ class ProjectsTask < ActiveRecord::Base
         self.messages += self.sync_dependers
       elsif !duration && self.end
         self.duration = self.end - self.begin
-        return self.error_duration_bz if duration < 0
+        return self.error_duration_bz if duration <= 0
       elsif duration && self.end
         if locked == "end"
           self.duration = self.end - self.begin
-          return self.error_duration_bz if duration < 0
+          return self.error_duration_bz if duration <= 0
         elsif locked == "begin"
           return []
         else #duration locked
@@ -176,11 +176,11 @@ class ProjectsTask < ActiveRecord::Base
         self.messages += self.sync_dependees
       elsif !duration && self.begin
         self.duration = self.end - self.begin
-        return self.error_duration_bz if duration < 0
+        return self.error_duration_bz if duration <= 0
       elsif duration && self.begin
         if locked == "begin"
           self.duration = self.end - self.begin
-          return self.error_duration_bz if duration < 0
+          return self.error_duration_bz if duration <= 0
         elsif locked == "end"
           return []
         else #duration locked
