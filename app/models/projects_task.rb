@@ -219,7 +219,7 @@ class ProjectsTask < ActiveRecord::Base
     def message_base
       unless self.topic.nil? || self.topic_id == "drycreate"
         t = Topic.find(topic_id)
-        return {url:t.url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
+        return {url:t.relative_url, title: t.title, begin: self.begin, end: self.end, duration: self.duration}
 
       else
         return {url: "#", title: "the topic you are editing right now"}
@@ -238,7 +238,7 @@ class ProjectsTask < ActiveRecord::Base
         tasks.each{|c|
         unless c.topic_id.nil?
           t = Topic.find(c.topic_id)
-          url = t.url
+          url = t.relative_url
           title = t.title
         else
           url = "#"
@@ -274,7 +274,7 @@ class ProjectsTask < ActiveRecord::Base
         p = ProjectsTask.find(d)
         unless p.topic_id.nil?
           t = Topic.find(p.topic_id)
-          url = t.url
+          url = t.relative_url
           title = t.title
         else
           url = "#"
@@ -287,7 +287,7 @@ class ProjectsTask < ActiveRecord::Base
         p = ProjectsTask.find(d)
         unless p.topic_id.nil?
           t = Topic.find(p.topic_id)
-          url = t.url
+          url = t.relative_url
           title = t.title
         else
           url = "#"
