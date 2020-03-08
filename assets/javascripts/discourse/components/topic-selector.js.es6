@@ -104,6 +104,8 @@ export default Component.extend({
 
     },
     chooseTopic(topic) {
+      console.log(this.messages)
+      console.log(topic.url)
       this.set("selectedTopicId", topic.id);
       next(() => {
         this.selectedTopics.pushObject(topic)

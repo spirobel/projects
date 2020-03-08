@@ -8,6 +8,7 @@ export default Ember.Component.extend({
                                                     deponTopics: this.deponTopics,
                                                     curtop: this.curtop,
                                                     cat: this.cat,
+                                                    messages: this.messages,
                                                     submit: this.submit
                                                                     });
    },

@@ -11,10 +11,14 @@
 
     {{#if depon}}
     dependent on:
-    {{topic-selector selectedTopicsID=deponTopics cat=cat currentTopicId=curtop}}
+    {{topic-selector selectedTopicsID=deponTopics
+       cat=cat currentTopicId=curtop messages=messages
+     }}
     {{else}}
     depended on by:
-    {{topic-selector selectedTopicsID=depbyTopics cat=cat currentTopicId=curtop}}
+    {{topic-selector selectedTopicsID=depbyTopics
+       cat=cat currentTopicId=curtop messages=messages
+     }}
     {{/if}}
 
 
