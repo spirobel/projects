@@ -1,6 +1,11 @@
 # Projects
 
-Projects is a plugin to manage (project-)task dependencies with discourse.
+
+This is a plugin to manage task dependencies with discourse.
+It basically turns a category into a project and the topics in this category into tasks of this project.
+You can define dependencies between tasks. Essentially which tasks need to finish before other tasks can begin. You can also define beginning dates, end dates and the task duration. It will automatically set the beginning and end dates of the dependent tasks if you change them somewhere.
+It will also display earliest beginning date and latest end date in the category header.
+The total project duration will also be computed. You can also lock tasks so that the automatic computation of beginning and end dates does not affect them.
 This youtube video explains how to use it:
 [![Watch the video](https://i.imgur.com/mZaFKkw.png)](https://www.youtube.com/embed/qWR-YZ_khjw)
 
@@ -24,4 +29,12 @@ as the plugin command.
 ## Feedback
 
 If you have issues or suggestions for the plugin, please bring them up on
-[Discourse Meta](https://meta.discourse.org).
+[Discourse Meta](https://meta.discourse.org/t/projects-management-plugin/143712).
+
+## Poem
+```
+I depend on you.
+You depend on me.
+Who is the depender?
+And who is the dependee?
+```
