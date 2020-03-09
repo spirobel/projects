@@ -2,7 +2,7 @@
 
 Projects is a plugin to manage (project-)task dependencies with discourse.
 This youtube video explains how to use it:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qWR-YZ_khjw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Watch the video](https://i.imgur.com/mZaFKkw.png)](https://www.youtube.com/embed/qWR-YZ_khjw)
 
 TODO:
   * show messages on mobile / narrow screens
