@@ -3,7 +3,7 @@
     <label class='radio'>
       <input type='radio'  {{action "unselectTopic" t}}>
       {{topic-status topic=t}}
-      <span class="topic-title">
+      <span class="topic-title {{t.pt_class}}">
         {{t.title}} {{t.projectsTaskBeginPretty}} {{t.projectsTaskDurationPretty}} {{t.projectsTaskEndPretty}}
       </span>
     </label>

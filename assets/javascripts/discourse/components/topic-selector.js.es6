@@ -27,7 +27,22 @@ export default Component.extend({
     if(!this.selectedTopicsID){this.set('selectedTopicsID',[])}
     const selectedTopics = this.selectedTopics
     //eat topics as ids
-    TopicList.topics_array(this.selectedTopicsID).then(results => selectedTopics.pushObjects(results))
+    TopicList.topics_array(this.selectedTopicsID).then(results => {
+      results.forEach((e) => {
+
+        if(this.messages && this.messages[e.url]){
+
+          this.messages[e.url].forEach((m, i) => {
+            if(m.message_type == "error"){e.set("pt_class", "pt_error")}
+            else{e.set("pt_class","")}
+          })
+        }
+        else{e.set("pt_class","")}
+
+        selectedTopics.pushObjects(results)
+      })
+
+    })
     //TODO set category
     this.set('additionalFilters','#'+this.cat)
   },
@@ -104,8 +119,14 @@ export default Component.extend({
 
     },
     chooseTopic(topic) {
-      console.log(this.messages)
-      console.log(topic.url)
+        if(this.messages && this.messages[topic.url]){
+          this.messages[topic.url].forEach((m, i) => {
+            if(m.message_type == "error"){topic.set("pt_class","pt_error")}
+            else{topic.set("pt_class","")}
+
+          })
+        }
+        else{topic.set("pt_class","")}
       this.set("selectedTopicId", topic.id);
       next(() => {
         this.selectedTopics.pushObject(topic)
