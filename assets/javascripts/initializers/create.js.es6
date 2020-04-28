@@ -12,7 +12,7 @@ function initializeComposer(api) {
   Composer.serializeToDraft('projects_task');
   Composer.reopen({
     setupProjectsTask(){
-      if(!this.category.projects_enabled){return;}
+      if(!this.category || !this.category.projects_enabled){return;}
       //no draft
       if(!this.projects_task){
         let draft_projects_task = {}
