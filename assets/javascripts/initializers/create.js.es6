@@ -136,7 +136,6 @@ function initializeComposer(api) {
     save_projects_task(){
            const noteRecord = this.store.createRecord('note', this.projects_task);
            return noteRecord.save().then(function(result) {
-               console.log(this)
                 this.create_composer_messages(result);
                 //refresh topic
                 result.target.appEvents.trigger("post-stream:refresh", {
@@ -153,20 +152,21 @@ function initializeComposer(api) {
                 if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
                 if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
                 if(!this.projects_task.end){this.set("projects_task.end",  "") }
-
-           if(result.payload.pt_error){return Promise.reject()}
+           if(result.payload.pt_error){return Promise.reject("handled")}
            return Promise.resolve();
 
          }.bind(this)).catch(function(err){
+
+           if(err != "handled"){
            console.log(err)
-           /*
-            ( (err) => {
+
               const body = "an error has occured. please retry"
-              err.appEvents.trigger("composer-messages:create",
+              this.appEvents.trigger("composer-messages:create",
               {extraClass: "custom-body",templateName: "custom-body", body});
-            } )(err);
-            */
-          });
+            }
+          return Promise.reject()
+
+          }.bind(this));
 
       },
 
