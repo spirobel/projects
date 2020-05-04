@@ -87,79 +87,87 @@ function initializeComposer(api) {
             return ""
       }
     },
-    async save_projects_task(){
-           const noteRecord = this.store.createRecord('note', this.projects_task);
-           const   result = await noteRecord.save().then(function(result) {
-           //attach the new object to the topic here
-           let mhtml = ""
-           const messis = result.payload.messages
-           Object.keys(messis).forEach((i) => {
-             mhtml += `<div><h4><a href=${messis[i][0].url}>${messis[i][0].title}</a>
-             ${bed_block_format(messis[i][0].begin,messis[i][0].duration,messis[i][0].end)}
-             </h4><ul class="pt_messages">`
-             messis[i].forEach((m, i) => {
-               if(m.message_type == "error"){result.payload.pt_error = true}
-               if(m.message_type != "changes"){mhtml+=`<li class="${m.message_type}">${m.message}</li>`}
-               else{
-                 let message =""
-                 if(m.begin_from){
-                   message = m.begin_to?`will change begin from <b>${begin_format(m.begin_from)}</b> to <b>${begin_format(m.begin_to)}</b>`:'will unset begin'
-                 }
-                 else if(m.end_from){
-                   message = m.end_to?`will change end from <b>${end_format(m.end_from)}</b> to <b>${end_format(m.end_to)}</b>`:'will unset end'
-                 }
-                 else if(m.duration_from){
-                   message = m.duration_to?`will change duration from <b>${duration_format(m.duration_from)}</b> to <b>${duration_format(m.duration_to)}</b>`:'will unset duration'
-                 }
-                 else if(m.begin_to){
-                   message = `will set begin to <b>${begin_format(m.begin_to)}</b>`
-                 }
-                 else if(m.end_to){
-                   message = `will set end to <b>${end_format(m.end_to)}</b>`
-                 }
-                 else if(m.duration_to){
-                   message = `will set duration to <b>${duration_format(m.duration_to)}</b>`
-                 }
-                 else {
-                   message = JSON.stringify(m)
-                 }
-                 mhtml+=`<li class="${m.message_type}">${message}</li>`}
-             });
-             mhtml +="</ul></div>"
-           });
+    //TODO: this should become a component
+    create_composer_messages(result){
+      let mhtml = ""
+      const messis = result.payload.messages
+      Object.keys(messis).forEach((i) => {
+        mhtml += `<div><h4><a href=${messis[i][0].url}>${messis[i][0].title}</a>
+        ${bed_block_format(messis[i][0].begin,messis[i][0].duration,messis[i][0].end)}
+        </h4><ul class="pt_messages">`
+        messis[i].forEach((m, i) => {
+          if(m.message_type == "error"){result.payload.pt_error = true}
+          if(m.message_type != "changes"){mhtml+=`<li class="${m.message_type}">${m.message}</li>`}
+          else{
+            let message =""
+            if(m.begin_from){
+              message = m.begin_to?`will change begin from <b>${begin_format(m.begin_from)}</b> to <b>${begin_format(m.begin_to)}</b>`:'will unset begin'
+            }
+            else if(m.end_from){
+              message = m.end_to?`will change end from <b>${end_format(m.end_from)}</b> to <b>${end_format(m.end_to)}</b>`:'will unset end'
+            }
+            else if(m.duration_from){
+              message = m.duration_to?`will change duration from <b>${duration_format(m.duration_from)}</b> to <b>${duration_format(m.duration_to)}</b>`:'will unset duration'
+            }
+            else if(m.begin_to){
+              message = `will set begin to <b>${begin_format(m.begin_to)}</b>`
+            }
+            else if(m.end_to){
+              message = `will set end to <b>${end_format(m.end_to)}</b>`
+            }
+            else if(m.duration_to){
+              message = `will set duration to <b>${duration_format(m.duration_to)}</b>`
+            }
+            else {
+              message = JSON.stringify(m)
+            }
+            mhtml+=`<li class="${m.message_type}">${message}</li>`}
+        });
+        mhtml +="</ul></div>"
+      });
 
-              const body = mhtml
-              result.target.appEvents.trigger("composer-messages:create", {
-                extraClass: "custom-body",
-                templateName: "custom-body",
-                body
-              });
-              result.target.appEvents.trigger("post-stream:refresh", {
+         const body = mhtml
+         result.target.appEvents.trigger("composer-messages:create", {
+           extraClass: "custom-body",
+           templateName: "custom-body",
+           body
+         });
+    },
+    save_projects_task(){
+           const noteRecord = this.store.createRecord('note', this.projects_task);
+           return noteRecord.save().then(function(result) {
+               console.log(this)
+                this.create_composer_messages(result);
+                //refresh topic
+                result.target.appEvents.trigger("post-stream:refresh", {
                   id: parseInt(result.responseJson.id, 10)
                 });
-              return result.payload
-          }).catch(console.error);
-          if(!result){
-            const body = "an error has occured. please retry"
-            this.appEvents.trigger("composer-messages:create",
-             {extraClass: "custom-body",templateName: "custom-body", body});
-            return
-          }
-//https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/routes/application.js.es6#L190
+                //refresh category
+                  Category.reloadById(this.categoryId).then(atts => {
+                       const model = this.store.createRecord("category", atts.category);
+                       model.setupGroupsAndPermissions();
+                       this.site.updateCategory(model);
+                  });
+                //set projects_task on composer
+                this.set("projects_task", result.payload);
+                if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
+                if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
+                if(!this.projects_task.end){this.set("projects_task.end",  "") }
 
-          Category.reloadById(this.categoryId).then(atts => {
-                 const model = this.store.createRecord("category", atts.category);
-                 model.setupGroupsAndPermissions();
-                 this.site.updateCategory(model);
-                 //probably this breaks category edit
-                 //this.controllerFor("edit-category").set("selectedTab", "general");
+           if(result.payload.pt_error){return Promise.reject()}
+           return Promise.resolve();
+
+         }.bind(this)).catch(function(err){
+           console.log(err)
+           /*
+            ( (err) => {
+              const body = "an error has occured. please retry"
+              err.appEvents.trigger("composer-messages:create",
+              {extraClass: "custom-body",templateName: "custom-body", body});
+            } )(err);
+            */
           });
 
-          this.set("projects_task", result);
-          if(!this.projects_task.begin){this.set("projects_task.begin",  "") }
-          if(!this.projects_task.duration){this.set("projects_task.duration",  "") }
-          if(!this.projects_task.end){this.set("projects_task.end",  "") }
-          return result.pt_error
       },
 
 
@@ -178,14 +186,12 @@ function initializeComposer(api) {
 //this.begin time pr_t_att etc is all there
 //also:this.action: "edit" and this.topic.id
 //topic.currentPost: 1
- api.composerBeforeSave(async function() {
+ api.composerBeforeSave(function() {
    if(!this.category.projects_enabled){return Promise.resolve();}
    if (this.action == 'edit') {
      this.set('projects_task.id',this.topic.id);
      this.set('projects_task.dry',false);
-
-     let pt_error = await this.save_projects_task();
-     if(pt_error){return Promise.reject()}
+     return this.save_projects_task();
     }
     return Promise.resolve();
  });

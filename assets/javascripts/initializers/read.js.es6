@@ -76,30 +76,33 @@ function initializeTopic(api) {
   });
 
   Topic.reopen({
-    async destroy(deleted_by) {
+    destroy(deleted_by) {
       if(!this.category.projects_enabled){return this._super(...arguments);}
-       let catid = this.category.id
-        await this._super(...arguments);
-        Category.reloadById(catid).then(atts => {
-               const model = this.store.createRecord("category", atts.category);
-               model.setupGroupsAndPermissions();
-               this.site.updateCategory(model);
-               //probably this breaks category edit
-               //this.controllerFor("edit-category").set("selectedTab", "general");
-        });
+      this._super(...arguments).then(function(){
+          Category.reloadById(this.category.id).then(atts => {
+                 const model = this.store.createRecord("category", atts.category);
+                 model.setupGroupsAndPermissions();
+                 this.site.updateCategory(model);
+          });
+
+      }.bind(this));
+
 
     },
-    async recover() {
+    recover() {
       if(!this.category.projects_enabled){return this._super(...arguments);}
-       let catid = this.category.id
-        await this._super(...arguments);
-        Category.reloadById(catid).then(atts => {
-               const model = this.store.createRecord("category", atts.category);
-               model.setupGroupsAndPermissions();
-               this.site.updateCategory(model);
-               //probably this breaks category edit
-               //this.controllerFor("edit-category").set("selectedTab", "general");
-        });
+       this._super(...arguments).then(function(){
+           Category.reloadById(this.category.id).then(atts => {
+                  const model = this.store.createRecord("category", atts.category);
+                  model.setupGroupsAndPermissions();
+                  this.site.updateCategory(model);
+           });
+
+       }.bind(this));
+
+
+
+
 
     },
 
