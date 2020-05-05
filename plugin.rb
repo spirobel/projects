@@ -66,7 +66,6 @@ after_initialize do
     end
   end
   class ::ListController
-    before_action :ensure_logged_in, except: [:topics_array]
     def topics_array
       list_opts = build_topic_list_options
       list = TopicQuery.new(current_user, list_opts).send("list_topics_array")
